@@ -14,18 +14,78 @@ import { linkAttrs } from '../links';
 
 const role = 'Ph.D. Student, University of Auckland';
 
-const education = [
+/**
+ * `detail` and `where` are both optional: a teaching entry has no location to
+ * give, and an award is often just a name and a year. Sections with no items
+ * are skipped entirely rather than leaving a stranded heading.
+ */
+interface Entry {
+  title: string;
+  detail?: string;
+  when: string;
+  where?: string;
+}
+
+const sections: { heading: string; items: Entry[] }[] = [
   {
-    title: 'University of Auckland',
-    detail: 'Ph.D. in Computer Science, advised by Elliott Wen and Valerio Terragni.',
-    when: '2025 — now',
-    where: 'Auckland, New Zealand',
+    heading: 'Education',
+    items: [
+      {
+        title: 'University of Auckland',
+        detail: 'Ph.D. in Computer Science, advised by Elliott Wen and Valerio Terragni.',
+        when: 'Jul 2026 — now',
+        where: 'Auckland, New Zealand',
+      },
+      {
+        title: 'University of Auckland',
+        detail: 'Master of Science in Computer Science, First Class Honours.',
+        when: 'Nov 2024 — Feb 2026',
+        where: 'Auckland, New Zealand',
+      },
+    ],
+  },
+  {
+    heading: 'Experience',
+    items: [
+      {
+        title: 'Robotics Lab, University of Auckland',
+        detail: 'Research Assistant.',
+        when: 'Jul 2026 — now',
+        where: 'Auckland, New Zealand',
+      },
+    ],
+  },
+  {
+    heading: 'Teaching',
+    items: [
+      {
+        title: 'COMPSCI 331 — Large-Scale Software Development',
+        detail: 'Teaching Assistant, University of Auckland.',
+        when: 'Mar — Jun 2026',
+      },
+      {
+        title: 'COMPSCI 702 — Security for Smart-Devices',
+        detail: 'Teaching Assistant, University of Auckland.',
+        when: 'Mar — Jun 2026',
+      },
+    ],
+  },
+  {
+    heading: 'Awards',
+    items: [
+      {
+        title: 'Tūwhana Doctoral Scholarship',
+        detail: 'Full funding for the Ph.D. at the University of Auckland.',
+        when: '2026',
+      },
+      {
+        title: 'First in Course — COMPSCI 702',
+        detail: 'University of Auckland.',
+        when: '2026',
+      },
+    ],
   },
 ];
-
-// Empty sections are skipped, so leave this as [] until there is something
-// real to put in it.
-const employment: typeof education = [];
 
 const publications = (await getCollection('publications', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order || b.data.year - a.data.year
@@ -57,28 +117,25 @@ const contact = site.links.filter((link) => link.href !== '/cv');
       </header>
 
       {
-        [
-          { heading: 'Education', items: education },
-          { heading: 'Employment', items: employment },
-        ]
+        sections
           .filter((section) => section.items.length > 0)
           .map((section) => (
-          <section class="cv-section">
-            <h2>{section.heading}</h2>
-            {section.items.map((item) => (
-              <div class="row">
-                <div class="row__main">
-                  <div class="row__title">{item.title}</div>
-                  <p class="row__detail">{item.detail}</p>
+            <section class="cv-section">
+              <h2>{section.heading}</h2>
+              {section.items.map((item) => (
+                <div class="row">
+                  <div class="row__main">
+                    <div class="row__title">{item.title}</div>
+                    {item.detail && <p class="row__detail">{item.detail}</p>}
+                  </div>
+                  <div class="row__aside">
+                    <div>{item.when}</div>
+                    {item.where && <div>{item.where}</div>}
+                  </div>
                 </div>
-                <div class="row__aside">
-                  <div>{item.when}</div>
-                  <div>{item.where}</div>
-                </div>
-              </div>
-            ))}
-          </section>
-        ))
+              ))}
+            </section>
+          ))
       }
 
       <section class="cv-section">
