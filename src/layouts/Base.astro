@@ -26,8 +26,10 @@ const isCurrent = (href: string) =>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Matches --bg so mobile browser chrome does not sit on a different white. -->
-    <meta name="theme-color" content="#fdfdfd" />
+    <!-- Matches --bg in each scheme, so mobile browser chrome never sits on a
+         different shade than the page it frames. -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fdfdfd" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#18181b" />
     {/* Transparent background, so the icon sits correctly on a light or a dark
         tab strip. The Apple icon is flattened onto white instead: iOS ignores
         transparency and composites the home-screen icon onto black. */}

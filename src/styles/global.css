@@ -20,6 +20,28 @@
   --bg: #fdfdfd; /* page */
 
   --measure: 53rem; /* 954px */
+
+  /* Tells the browser to render form controls, scrollbars and the like in the
+     matching scheme. Without it they stay light on a dark page. */
+  color-scheme: light dark;
+}
+
+/*
+ * Dark mode follows the system setting only — no toggle. The greyscale ramp is
+ * not simply inverted: in light mode a surface sits *darker* than the page
+ * (--fill 242 against --bg 253), so in dark mode it has to sit *lighter*, or
+ * empty image slots and code backgrounds would sink into the page and vanish.
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #fafafa; /* headings, own name, emphasis */
+    --body: #d4d4d8; /* body copy */
+    --muted: #a1a1aa; /* meta, links at rest, nav */
+    --rule: #52525b; /* underlines, placeholder glyphs */
+    --hair: #2c2c31; /* borders and dividers */
+    --fill: #232327; /* empty image slots, code backgrounds */
+    --bg: #18181b; /* page */
+  }
 }
 
 *,
