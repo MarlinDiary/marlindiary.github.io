@@ -225,8 +225,23 @@ a:hover {
 
 .site-footer .wrap {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem; /* 27px */
+}
+
+.site-footer__links {
+  display: flex;
   gap: 1.25rem;
-  justify-content: center;
+}
+
+/* Whole-site freshness, not this page's. Left in the body serif rather than
+   the sans used for labels and nav: this is a sentence, not a meta chip, and
+   the serif is what makes it read as a quiet footnote. */
+.site-footer__updated {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted);
 }
 
 .site-footer a {

@@ -44,11 +44,12 @@ if (arxiv) links.push({ label: 'arXiv', href: `https://arxiv.org/abs/${arxiv}`, 
 if (github) links.push({ label: 'Code', href: `https://github.com/${github}`, icon: 'code' });
 links.push(...extraLinks.map((l) => ({ ...l, icon: l.icon ?? 'link' })));
 
-// The title links to the paper itself — an explicit order, not simply the
-// first entry in the row: the dataset now sorts ahead of the paper links, and
-// a title pointing at a data archive is the wrong destination.
+// The title goes wherever the row's first link goes — same priority, one rule
+// to reason about. That order also reads correctly per paper: a project page
+// when there is one, otherwise the dataset for a benchmark paper whose
+// contribution *is* the data, otherwise the paper itself.
 const titleHref =
-  project ?? pdf ?? (arxiv ? `https://arxiv.org/abs/${arxiv}` : undefined) ?? links[0]?.href;
+  project ?? dataset ?? pdf ?? (arxiv ? `https://arxiv.org/abs/${arxiv}` : undefined) ?? links[0]?.href;
 ---
 
 <article class="pub">
