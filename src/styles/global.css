@@ -175,11 +175,38 @@ a:hover {
   padding-top: 2rem;
 }
 
+/*
+ * Every link is laid out at the width of its own bold form, whichever page is
+ * open. Bold is wider than regular, so without this the current item would
+ * widen, and with `justify-content: center` the row would re-centre and all
+ * three labels would shift on every navigation.
+ *
+ * The reservation is an invisible copy of the label, set bold, in an ::after.
+ * It sets the box width and is collapsed to zero height, so it costs no
+ * vertical space; the real label is centred inside the box it leaves behind.
+ * Centred rather than left-aligned so the weight change grows outward from the
+ * middle, splitting the difference across both edges instead of pushing one.
+ *
+ * `visibility: hidden` keeps the duplicate text out of the accessibility tree,
+ * so a screen reader does not announce each item twice.
+ */
 .nav a {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
   font-family: var(--sans);
   font-size: 0.875rem; /* 15.75px */
   color: var(--muted);
   text-decoration: none;
+}
+
+.nav a::after {
+  content: attr(data-label);
+  font-weight: 700;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* The current page is marked by weight, not colour. */

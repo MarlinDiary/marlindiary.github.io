@@ -101,7 +101,11 @@ const isCurrent = (href: string) =>
       <nav class="nav">
         {
           nav.map((item) => (
-            <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+            <a
+              href={item.href}
+              data-label={item.label}
+              aria-current={isCurrent(item.href) ? 'page' : undefined}
+            >
               {item.label}
             </a>
           ))
