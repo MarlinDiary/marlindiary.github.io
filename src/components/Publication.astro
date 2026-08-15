@@ -4,6 +4,7 @@ import type { CollectionEntry } from 'astro:content';
 import { lookupAuthor, fullName } from '../authors';
 import Icon from './Icon.astro';
 import Placeholder from './Placeholder.astro';
+import { linkAttrs } from '../links';
 
 interface Props {
   entry: CollectionEntry<'publications'>;
@@ -21,6 +22,7 @@ const {
   imageAlt,
   imageHover,
   project,
+  dataset,
   arxiv,
   github,
   pdf,
@@ -34,11 +36,12 @@ const byline = authors.map((id) => lookupAuthor(id, `${entry.id}.md`));
 // Shorthand expanded into full links.
 const links: { label: string; href: string; icon: string }[] = [];
 if (project) links.push({ label: 'Project', href: project, icon: 'link' });
+if (dataset) links.push({ label: 'Dataset', href: dataset, icon: 'dataset' });
 if (pdf) links.push({ label: 'PDF', href: pdf, icon: 'pdf' });
 else if (arxiv) links.push({ label: 'PDF', href: `https://arxiv.org/pdf/${arxiv}`, icon: 'pdf' });
 if (arxiv) links.push({ label: 'arXiv', href: `https://arxiv.org/abs/${arxiv}`, icon: 'arxiv' });
 if (github) links.push({ label: 'Code', href: `https://github.com/${github}`, icon: 'code' });
-links.push(...extraLinks.map((l) => ({ ...l, icon: 'link' })));
+links.push(...extraLinks.map((l) => ({ ...l, icon: l.icon ?? 'link' })));
 
 // The title is a link too, pointing at the most useful destination available.
 const titleHref = links[0]?.href;
@@ -70,7 +73,7 @@ const titleHref = links[0]?.href;
 
   <div class="pub__body">
     <h3>
-      {titleHref ? <a class="pub__title" href={titleHref}>{title}</a> : title}
+      {titleHref ? <a class="pub__title" href={titleHref} {...linkAttrs(titleHref)}>{title}</a> : title}
     </h3>
 
     <p class="pub__authors">
@@ -81,7 +84,7 @@ const titleHref = links[0]?.href;
             {author.me ? (
               <b>{fullName(author)}</b>
             ) : author.website ? (
-              <a href={author.website}>{fullName(author)}</a>
+              <a href={author.website} {...linkAttrs(author.website)}>{fullName(author)}</a>
             ) : (
               fullName(author)
             )}
@@ -103,7 +106,7 @@ const titleHref = links[0]?.href;
       links.length > 0 && (
         <div class="meta-links">
           {links.map((link) => (
-            <a href={link.href}>
+            <a href={link.href} {...linkAttrs(link.href)}>
               <Icon name={link.icon} />
               {link.label}
             </a>

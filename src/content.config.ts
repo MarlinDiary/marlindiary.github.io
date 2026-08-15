@@ -39,6 +39,12 @@ const publications = defineCollection({
       /** Full project page URL. */
       project: z.string().url().optional(),
       /**
+       * Dataset or artefact release. Sits with the project page at the front of
+       * the row, ahead of the paper links: for a benchmark paper the data is a
+       * primary output, not an appendix to the PDF.
+       */
+      dataset: z.string().url().optional(),
+      /**
        * arXiv id. **Must be quoted**: arxiv: '2301.00010'
        * Unquoted, YAML parses it as a float and drops the trailing zero, which
        * silently breaks the link. Supplying this generates both PDF and arXiv links.
@@ -48,9 +54,13 @@ const publications = defineCollection({
       github: z.string().optional(),
       /** Full URL for a non-arXiv PDF. Overrides the arXiv-derived PDF link. */
       pdf: z.string().url().optional(),
-      /** Escape hatch for anything else: Video, Poster, BibTeX. */
+      /**
+       * Escape hatch for anything else: Dataset, Video, Poster, BibTeX.
+       * `icon` takes any name from src/components/Icon.astro; omit it for the
+       * generic globe.
+       */
       links: z
-        .array(z.object({ label: z.string(), href: z.string() }))
+        .array(z.object({ label: z.string(), href: z.string(), icon: z.string().optional() }))
         .default([]),
 
       /** Lower sorts first. Ties break by year, descending. */

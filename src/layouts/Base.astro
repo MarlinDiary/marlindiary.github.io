@@ -2,6 +2,7 @@
 import { ClientRouter } from 'astro:transitions';
 import { site, nav } from '../site';
 import Icon from '../components/Icon.astro';
+import { linkAttrs } from '../links';
 import '../styles/global.css';
 
 interface Props {
@@ -77,7 +78,7 @@ const isCurrent = (href: string) =>
       <div class="wrap">
         {
           site.links.map((link) => (
-            <a href={link.href} aria-label={link.label} title={link.label}>
+            <a href={link.href} aria-label={link.label} title={link.label} {...linkAttrs(link.href)}>
               <Icon name={link.icon ?? 'link'} />
             </a>
           ))

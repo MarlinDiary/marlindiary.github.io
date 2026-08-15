@@ -5,6 +5,7 @@ import Base from '../layouts/Base.astro';
 import Publication from '../components/Publication.astro';
 import Placeholder from '../components/Placeholder.astro';
 import { site } from '../site';
+import { externalLinksInHtml } from '../links';
 
 const publications = (await getCollection('publications', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order || b.data.year - a.data.year
@@ -48,7 +49,7 @@ const greeting = site.greeting || `Hello, I'm ${site.name}`;
 
       <div class="intro__text">
         <h1>{greeting}</h1>
-        {site.bio.map((para) => <p set:html={para} />)}
+        {site.bio.map((para) => <p set:html={externalLinksInHtml(para)} />)}
       </div>
     </div>
   </section>

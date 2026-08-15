@@ -41,6 +41,7 @@ year: 2026
 awards: [Oral Presentation]     # optional, several allowed
 blurb: One plain sentence saying what the paper does.
 project: https://...            # optional
+dataset: https://...            # optional, sits at the front of the row
 arxiv: '2601.00010'             # optional, generates both PDF and arXiv links
 github: owner/repo              # optional, generates the Code link
 image: ./thumb.jpg              # optional, falls back to a placeholder

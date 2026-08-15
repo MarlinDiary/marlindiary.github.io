@@ -38,20 +38,44 @@ export const authors = {
     website: 'https://valerio-terragni.github.io/',
   },
 
-  // Placeholders, used by the sample publications. Delete once real papers
-  // replace them.
-  collaboratorOne: {
-    first: 'Collaborator',
-    last: 'One',
-    website: 'https://example.com',
+  jensDietrich: {
+    first: 'Jens',
+    last: 'Dietrich',
+    website: 'https://people.wgtn.ac.nz/jens.dietrich',
   },
-  collaboratorTwo: {
-    first: 'Collaborator',
-    last: 'Two',
+  paulDenny: {
+    first: 'Paul',
+    last: 'Denny',
+    website: 'https://www.cs.auckland.ac.nz/~paul/',
   },
-  collaboratorThree: {
-    first: 'Collaborator',
-    last: 'Three',
+  andrewLuxtonReilly: {
+    first: 'Andrew',
+    last: 'Luxton-Reilly',
+    website: 'https://www.cs.auckland.ac.nz/~andrew/',
+  },
+
+  seanMa: {
+    first: 'Sean',
+    last: 'Ma',
+    website: 'https://profiles.auckland.ac.nz/sean-ma',
+  },
+  bruceSham: {
+    first: 'Bruce',
+    last: 'Sham',
+    website: 'https://profiles.auckland.ac.nz/b-sham',
+  },
+
+  junSeo: {
+    first: 'Jun',
+    last: 'Seo',
+    website: 'https://profiles.auckland.ac.nz/jun-seo',
+  },
+
+  // No homepage found — searched the Auckland directory and Scholar. Add one
+  // here if it appears; the byline picks it up automatically.
+  yuYang: {
+    first: 'Yu',
+    last: 'Yang',
   },
 } satisfies Record<string, Author>;
 

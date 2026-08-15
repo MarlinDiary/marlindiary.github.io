@@ -47,6 +47,10 @@ const SETS: Record<string, { data: IconSet; scale: number }> = {
 /**
  * Per-icon corrections, "<set>:<icon>" → scale.
  *
+ * These values REPLACE the set scale rather than multiplying it, so an entry
+ * here is an absolute factor: to give a glyph 8% more than a set scale of
+ * 0.84, write 0.91, not 1.08.
+ *
  * A single per-set number is not always enough: Academicons is font-derived, so
  * how much of the 512-tall grid a glyph actually occupies varies. The Scholar
  * cap fills only about three quarters of its own box and needs scaling up to
@@ -67,13 +71,14 @@ const MAP: Record<string, string> = {
   cv: 'hero:document-text',
   email: 'hero:envelope',
   link: 'hero:globe-alt',
-  pdf: 'hero:document-arrow-down',
+  pdf: 'hero:document',
   code: 'hero:code-bracket',
   video: 'hero:play',
   slides: 'hero:presentation-chart-bar',
   poster: 'hero:photo',
   image: 'hero:photo',
   bibtex: 'hero:document-duplicate',
+  dataset: 'hero:circle-stack',
   // A format, not a company — so it belongs to the house family, alongside
   // the envelope it sits next to in the footer.
   rss: 'hero:rss',
@@ -89,6 +94,7 @@ const MAP: Record<string, string> = {
   openaccess: 'academic:open-access',
 
   // ── Other brands ────────────────────────────────────────
+  acm: 'simple:acm',
   github: 'simple:github',
   twitter: 'simple:x',
   x: 'simple:x',
