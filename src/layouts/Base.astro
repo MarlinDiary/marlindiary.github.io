@@ -27,7 +27,12 @@ const isCurrent = (href: string) =>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Matches --bg so mobile browser chrome does not sit on a different white. -->
     <meta name="theme-color" content="#fdfdfd" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {/* Transparent background, so the icon sits correctly on a light or a dark
+        tab strip. The Apple icon is flattened onto white instead: iOS ignores
+        transparency and composites the home-screen icon onto black. */}
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <meta property="og:title" content={pageTitle} />
