@@ -30,10 +30,16 @@ const publications = defineCollection({
       image: image().optional(),
       imageAlt: z.string().optional(),
       /**
-       * Video played on hover. Lives in public/, referenced by absolute path.
-       * The first paint only loads the still image; the video is fetched on hover.
+       * A second still swapped in on hover, kept beside the .md like `image`
+       * and optimised the same way. Touch devices never fire hover, so they
+       * simply keep showing `image`.
        */
-      imageHover: z.string().optional(),
+      imageHover: image().optional(),
+      /**
+       * Video played on hover instead. Lives in public/, referenced by an
+       * absolute path, and fetched only when the pointer arrives.
+       */
+      videoHover: z.string().optional(),
 
       // ── Links: give the shorthand, the template expands the full URL ──
       /** Full project page URL. */

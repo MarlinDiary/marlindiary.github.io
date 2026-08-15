@@ -71,11 +71,12 @@ export const authors = {
     website: 'https://profiles.auckland.ac.nz/jun-seo',
   },
 
-  // No homepage found — searched the Auckland directory and Scholar. Add one
-  // here if it appears; the byline picks it up automatically.
+  // The only co-author not at Auckland: the paper gives Education University
+  // of Hong Kong.
   yuYang: {
     first: 'Yu',
     last: 'Yang',
+    website: 'https://www.eduhk.hk/mit/en/staff/yangyy',
   },
 } satisfies Record<string, Author>;
 

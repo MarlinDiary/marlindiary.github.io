@@ -21,6 +21,7 @@ const {
   image,
   imageAlt,
   imageHover,
+  videoHover,
   project,
   dataset,
   arxiv,
@@ -43,8 +44,11 @@ if (arxiv) links.push({ label: 'arXiv', href: `https://arxiv.org/abs/${arxiv}`, 
 if (github) links.push({ label: 'Code', href: `https://github.com/${github}`, icon: 'code' });
 links.push(...extraLinks.map((l) => ({ ...l, icon: l.icon ?? 'link' })));
 
-// The title is a link too, pointing at the most useful destination available.
-const titleHref = links[0]?.href;
+// The title links to the paper itself — an explicit order, not simply the
+// first entry in the row: the dataset now sorts ahead of the paper links, and
+// a title pointing at a data archive is the wrong destination.
+const titleHref =
+  project ?? pdf ?? (arxiv ? `https://arxiv.org/abs/${arxiv}` : undefined) ?? links[0]?.href;
 ---
 
 <article class="pub">
@@ -58,9 +62,21 @@ const titleHref = links[0]?.href;
     }
     {
       imageHover && (
+        <Image
+          class="pub__hover"
+          src={imageHover}
+          alt=""
+          aria-hidden="true"
+          width={382}
+          height={382}
+        />
+      )
+    }
+    {
+      videoHover && (
         <video
           class="pub__video"
-          src={imageHover}
+          src={videoHover}
           muted
           loop
           playsinline
@@ -187,6 +203,9 @@ const titleHref = links[0]?.href;
     object-fit: cover;
   }
 
+  /* Both hover layers sit on top of the still and fade in. Pure CSS, so a
+     touch device — which never fires hover — just keeps the still. */
+  .pub__thumb :global(.pub__hover),
   .pub__video {
     position: absolute;
     inset: 0;
@@ -194,8 +213,16 @@ const titleHref = links[0]?.href;
     transition: opacity 0.18s ease;
   }
 
+  .pub__thumb:hover :global(.pub__hover),
   .pub__thumb:hover .pub__video {
     opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pub__thumb :global(.pub__hover),
+    .pub__video {
+      transition: none;
+    }
   }
 
   .pub__body {
