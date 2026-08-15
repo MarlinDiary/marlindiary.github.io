@@ -82,6 +82,11 @@ const isCurrent = (href: string) =>
             </a>
           ))
         }
+        {/* Deliberately not in site.links: that list is how to reach the
+            person, and it also fills the CV header, where a feed has no place. */}
+        <a href="/rss.xml" aria-label="RSS feed" title="RSS feed">
+          <Icon name="rss" />
+        </a>
       </div>
     </footer>
   </body>

@@ -34,10 +34,11 @@ export const site = {
    * cv / scholar / github / email / twitter / link
    */
   links: [
-    { label: 'CV', href: '/cv', icon: 'cv' },
     {
       label: 'Scholar',
-      href: 'https://scholar.google.com/citations?user=YOUR_ID',
+      // `hl=en` only pins Scholar's interface language; leaving it off lets the
+      // visitor's own setting apply. `user` is the only parameter that matters.
+      href: 'https://scholar.google.com/citations?user=B69okv8AAAAJ',
       icon: 'scholar',
       handle: 'Google Scholar',
     },
@@ -48,10 +49,16 @@ export const site = {
       handle: 'MarlinDiary',
     },
     {
+      label: 'X',
+      href: 'https://x.com/MarlinDiary',
+      icon: 'x',
+      handle: '@MarlinDiary',
+    },
+    {
       label: 'Email',
-      href: 'mailto:you@example.com',
+      href: 'mailto:cni586@aucklanduni.ac.nz',
       icon: 'email',
-      handle: 'you@example.com',
+      handle: 'cni586@aucklanduni.ac.nz',
     },
   ] satisfies { label: string; href: string; icon?: string; handle?: string }[],
 };

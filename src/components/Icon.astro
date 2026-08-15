@@ -54,6 +54,11 @@ const SETS: Record<string, { data: IconSet; scale: number }> = {
  */
 const OPTICAL: Record<string, number> = {
   'academic:google-scholar': 1.08,
+  // The feed mark is a quarter arc springing from one corner, so it paints a
+  // noticeably smaller square than the glyphs around it. Nudged up — but
+  // measured against the envelope beside it, not the solid brand marks, since
+  // those carry far more ink at the same height.
+  'hero:rss': 1.1,
 };
 
 /** Slot name used across the site → "<set>:<icon>". */
@@ -69,6 +74,9 @@ const MAP: Record<string, string> = {
   poster: 'hero:photo',
   image: 'hero:photo',
   bibtex: 'hero:document-duplicate',
+  // A format, not a company — so it belongs to the house family, alongside
+  // the envelope it sits next to in the footer.
+  rss: 'hero:rss',
 
   // ── Academic brands ─────────────────────────────────────
   scholar: 'academic:google-scholar',
@@ -106,6 +114,18 @@ const width = icon.width ?? set.data.width ?? 24;
 const height = icon.height ?? set.data.height ?? 24;
 
 const scale = OPTICAL[`${setName}:${iconName}`] ?? set.scale;
+
+// Scaling a stroked glyph with a transform thickens its line by the same
+// factor, which would leave it heavier than the rest of its family. Divide the
+// stroke back out so the weight stays put and only the size changes.
+const body =
+  setName === 'hero' && scale !== 1
+    ? icon.body.replace(
+        /stroke-width="([\d.]+)"/g,
+        (_, w) => `stroke-width="${(Number(w) / scale).toFixed(3)}"`
+      )
+    : icon.body;
+
 const transform =
   scale === 1
     ? undefined
@@ -119,5 +139,5 @@ const transform =
   data-icon={name}
   data-set={setName}
 >
-  {transform ? <g transform={transform} set:html={icon.body} /> : <Fragment set:html={icon.body} />}
+  {transform ? <g transform={transform} set:html={body} /> : <Fragment set:html={icon.body} />}
 </svg>
