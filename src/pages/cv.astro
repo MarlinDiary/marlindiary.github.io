@@ -177,11 +177,14 @@ const contact = site.links.filter((link) => link.href !== '/cv');
 </Base>
 
 <style>
+  /* Vertically centred against the name block rather than top-aligned: the
+     contact column runs four lines to the name's two, so aligning their tops
+     leaves the contacts hanging well below the rule. */
   .cv-head {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem 2rem;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     padding-bottom: 1.5rem; /* 27px */
     border-bottom: 1px solid var(--hair);
@@ -298,6 +301,14 @@ const contact = site.links.filter((link) => link.href !== '/cv');
   }
 
   @media (max-width: 767px) {
+    /* Forced into a column rather than left to wrap: the two blocks still fit
+       side by side well below the breakpoint, so wrapping alone would leave
+       the contacts pinned to the right edge until the window got very narrow. */
+    .cv-head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
     .cv-contact {
       align-items: flex-start;
     }

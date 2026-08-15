@@ -333,4 +333,15 @@ a:hover {
   .post {
     break-inside: avoid;
   }
+
+  /* Paper has no viewport width to trigger the desktop breakpoint, so the CV
+     header is pinned to its side-by-side arrangement explicitly. */
+  .cv-head {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  .cv-contact {
+    align-items: flex-end;
+  }
 }
