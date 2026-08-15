@@ -13,7 +13,7 @@
 const EXTERNAL = /^https?:\/\//i;
 
 /** Site's own origin, so a full URL pointing back home is treated as internal. */
-const SITE_HOST = 'marlindiary.github.io';
+const SITE_HOST = 'chenyeni.com';
 
 export function isExternal(href: string | undefined): boolean {
   if (!href || !EXTERNAL.test(href)) return false;

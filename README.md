@@ -1,7 +1,7 @@
 # marlindiary.github.io
 
 Personal academic homepage. Astro, fully static, deployed to
-<https://marlindiary.github.io> by GitHub Actions on every push to `main`.
+<https://chenyeni.com> by GitHub Actions on every push to `main`.
 
 ## Local development
 

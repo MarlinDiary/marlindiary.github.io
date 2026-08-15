@@ -6,7 +6,7 @@ import rehypeKatex from 'rehype-katex';
 import rehypeExternalLinks from 'rehype-external-links';
 
 export default defineConfig({
-  site: 'https://marlindiary.github.io',
+  site: 'https://chenyeni.com',
   integrations: [sitemap()],
   markdown: {
     // Astro 7 defaults to Sätteri, which has no math support, so the pipeline
