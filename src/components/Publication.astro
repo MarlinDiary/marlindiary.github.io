@@ -50,26 +50,60 @@ links.push(...extraLinks.map((l) => ({ ...l, icon: l.icon ?? 'link' })));
 // contribution *is* the data, otherwise the paper itself.
 const titleHref =
   project ?? dataset ?? pdf ?? (arxiv ? `https://arxiv.org/abs/${arxiv}` : undefined) ?? links[0]?.href;
+
+/*
+ * How wide the thumbnail actually renders, so the browser can pick a candidate
+ * instead of always taking the largest. The arithmetic follows the layout:
+ *
+ *   .wrap  content is 954px, with 27px of padding either side
+ *   < 768  the thumbnail is the full content column   -> 100vw - 54px
+ *   >= 768 it is `flex: 0 0 20%` of that column       -> (100vw - 54px) * 0.2,
+ *          settling at 191px once the column stops growing at 1008px
+ *
+ * Written in px rather than rem: `sizes` is evaluated before styles are
+ * necessarily applied, so a rem here would resolve against the initial 16px
+ * root size and not the 18px this site sets.
+ */
+const THUMB_SIZES =
+  '(max-width: 767px) calc(100vw - 54px), (max-width: 1008px) calc((100vw - 54px) * 0.2), 191px';
+
+/*
+ * A fixed 382px was enough for the 191px desktop slot at 2x and nothing else.
+ * On a phone the same thumbnail fills the column — around 700px — so it was
+ * being stretched past twice its own size. These widths cover both ends; Astro
+ * skips any that exceed the source, so a small original simply yields fewer
+ * candidates rather than an upscaled, soft one.
+ */
+const THUMB_WIDTHS = [191, 382, 573, 800, 1200];
 ---
 
 <article class="pub">
   <div class="pub__thumb">
     {
       image ? (
-        <Image draggable={false} src={image} alt={imageAlt ?? title} width={382} height={382} />
+        <Image
+          draggable={false}
+          src={image}
+          alt={imageAlt ?? title}
+          widths={THUMB_WIDTHS}
+          sizes={THUMB_SIZES}
+          quality={90}
+        />
       ) : (
         <Placeholder />
       )
     }
     {
       imageHover && (
-        <Image draggable={false}
+        <Image
+          draggable={false}
           class="pub__hover"
           src={imageHover}
           alt=""
           aria-hidden="true"
-          width={382}
-          height={382}
+          widths={THUMB_WIDTHS}
+          sizes={THUMB_SIZES}
+          quality={90}
         />
       )
     }
@@ -284,12 +318,12 @@ const titleHref =
       flex-direction: column;
     }
 
-    /* Full width and cropped to a banner. A full-width square would take most
-       of the screen height before any text appeared. */
+    /* Full width, cropped to 4:3. A full-width square would take most of the
+       screen height before any text appeared. */
     .pub__thumb {
       flex-basis: auto;
       width: 100%;
-      aspect-ratio: 16 / 9;
+      aspect-ratio: 4 / 3;
     }
   }
 </style>

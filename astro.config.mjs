@@ -4,10 +4,11 @@ import sitemap from '@astrojs/sitemap';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeExternalLinks from 'rehype-external-links';
+import pruneOriginals from './src/prune-originals';
 
 export default defineConfig({
   site: 'https://chenyeni.com',
-  integrations: [sitemap()],
+  integrations: [sitemap(), pruneOriginals()],
   markdown: {
     // Astro 7 defaults to Sätteri, which has no math support, so the pipeline
     // is switched back to remark/rehype. Math is rendered to HTML at build
