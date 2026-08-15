@@ -23,8 +23,8 @@ export interface Author {
 
 export const authors = {
   me: {
-    first: 'Your',
-    last: 'Name',
+    first: 'Chenye',
+    last: 'Ni',
     me: true,
   },
   collaboratorOne: {

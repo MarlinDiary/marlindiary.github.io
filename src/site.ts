@@ -4,10 +4,10 @@
 
 export const site = {
   /** Used in <title>, and bolded in publication author lists. */
-  name: 'Your Name',
+  name: 'Chenye Ni',
 
   /** Homepage headline. Falls back to `Hello, I'm ${name}` when empty. */
-  greeting: '',
+  greeting: "Kia ora, I'm Chenye Ni",
 
   /** <meta name="description">, also used for social sharing. */
   description: 'Personal academic homepage.',
