@@ -12,5 +12,7 @@ links:
   - label: ACM
     href: 'https://doi.org/10.1145/3805760.3814930'
     icon: acm
-# image: ./rustbuildeq.jpg
+image: ./rustbuildeq.png
+imageAlt: Two identical crabs facing each other
+imageHover: ./rustbuildeq-hover.png
 ---
