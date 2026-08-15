@@ -1,0 +1,202 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+
+export const getStaticPaths = (async () => {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+// Detect math in the raw source so the stylesheet loads only where it is
+// needed, without asking the author to remember a frontmatter flag. Matches
+// $$display$$, $inline$, and the \( \) / \[ \] forms remark-math accepts.
+const hasMath = /\$\$[\s\S]+?\$\$|\$[^$\n]+\$|\\\(|\\\[/.test(post.body ?? '');
+
+const fmt = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<Base title={post.data.title} description={post.data.description} math={hasMath}>
+  <section class="band">
+    <div class="wrap">
+      <div class="post">
+        <header class="post-head">
+          <h1>{post.data.title}</h1>
+          <time class="post-head__date" datetime={post.data.date.toISOString()}>
+            {fmt.format(post.data.date)}
+          </time>
+        </header>
+
+        <article class="prose">
+          <Content />
+        </article>
+
+        <footer class="post-foot">
+          <a href="/blog">← Blog</a>
+        </footer>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /*
+   * The whole article — title, body and footer — is one narrower column,
+   * centred inside the 954px content width. Capping only the body would leave
+   * a full-width title above left-aligned text and a ragged gap down the
+   * right-hand side.
+   *
+   * 33rem = 594px, which is about 72 characters at the 20.25px prose size.
+   * That keeps long-form reading inside the 45–75 character range, and under
+   * the 80-character ceiling WCAG 1.4.8 sets. Deliberately scoped to the post
+   * body: this is the only surface on the site where someone reads paragraph
+   * after paragraph, so it is the only one where the measure has to hold.
+   *
+   * Not expressed in `ch`: 1ch is the width of "0", which in Crimson Pro runs
+   * 1.4× the average character, so a ch-based cap reads far wider than it looks.
+   */
+  .post {
+    max-width: 33rem;
+    margin-inline: auto;
+  }
+
+  .post-head {
+    margin-bottom: 2rem; /* 36px */
+  }
+
+  .post-head__date {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--muted);
+  }
+
+  /*
+   * Long-form body copy runs one step larger than the rest of the site
+   * (1.125rem / 20.25px at line-height 1.778) and every margin below is
+   * expressed in em against that size, so the whole block scales as one.
+   */
+  .prose {
+    font-size: 1.125rem;
+    line-height: 1.7778;
+  }
+
+  .prose :global(p) {
+    margin: 1.3333em 0;
+  }
+
+  .prose :global(h2) {
+    font-family: var(--display);
+    font-size: 1.6667em; /* 33.75px */
+    line-height: 1.3333;
+    margin: 1.8667em 0 1.0667em;
+  }
+
+  /* Display face here too. The serif h3 elsewhere is the exception, set for
+     publication titles, not the rule. */
+  .prose :global(h3) {
+    font-family: var(--display);
+    font-size: 1.3333em; /* 27px */
+    line-height: 1.5;
+    margin: 1.6667em 0 0.6667em;
+  }
+
+  .prose :global(h4) {
+    font-family: var(--display);
+    font-size: 1.1111em;
+    line-height: 1.5556;
+    margin: 1.7778em 0 0.4444em;
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 1.3333em 0;
+    padding-left: 1.5556em;
+  }
+
+  .prose :global(li) {
+    margin: 0.6667em 0;
+  }
+
+  .prose :global(blockquote) {
+    margin: 1.6667em 0;
+    padding-left: 1em;
+    border-left: 2px solid var(--hair);
+    color: var(--muted);
+  }
+
+  .prose :global(img),
+  .prose :global(video) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 1.7778em 0;
+    border-radius: 0.5rem;
+  }
+
+  .prose :global(hr) {
+    margin: 3.1111em 0;
+    border: 0;
+    border-top: 1px solid var(--hair);
+  }
+
+  /* Display formulas get paragraph-sized air and scroll rather than overflow
+     when a long expression is wider than the column. */
+  .prose :global(.katex-display) {
+    margin: 1.3333em 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.25em 0;
+  }
+
+  /* Inline code stays light. The reference puts near-black chips inside serif
+     running text, which punches holes in the line and breaks reading rhythm —
+     a tint carries the same signal at a fraction of the contrast. Fenced
+     blocks below stay dark, where the weight is earned. */
+  .prose :global(code) {
+    font-family: var(--mono);
+    font-size: 0.8889em;
+    background: var(--fill);
+    color: var(--ink);
+    padding: 0.15em 0.4em;
+    border-radius: 0.25rem;
+  }
+
+  .prose :global(pre) {
+    font-size: 0.8889em;
+    line-height: 1.75;
+    margin: 2em 0;
+    padding: 1em 1.5em;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+  }
+
+  .prose :global(pre code) {
+    background: none;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  /* Rule above the back link, matching the reference's post footer. */
+  .post-foot {
+    margin-top: 3rem; /* 54px */
+    padding-top: 2rem; /* 36px */
+    border-top: 1px solid var(--hair);
+    font-family: var(--sans);
+    font-size: 0.875rem;
+  }
+
+  .post-foot a {
+    text-decoration: none;
+  }
+</style>

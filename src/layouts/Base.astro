@@ -1,0 +1,88 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import { site, nav } from '../site';
+import Icon from '../components/Icon.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Links the KaTeX stylesheet. Only set by pages whose content has math. */
+  math?: boolean;
+}
+
+const { title, description = site.description, math = false } = Astro.props;
+const pageTitle = title ? `${title} · ${site.name}` : site.name;
+
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isCurrent = (href: string) =>
+  href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Matches --bg so mobile browser chrome does not sit on a different white. -->
+    <meta name="theme-color" content="#fdfdfd" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${site.name} — Blog`}
+      href="/rss.xml"
+    />
+
+    {/* 28KB, and the fonts are only fetched for glyphs a formula actually uses. */}
+    {math && <link rel="stylesheet" href="/katex/katex.min.css" />}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <ClientRouter />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="wrap">
+      <nav class="nav">
+        {
+          nav.map((item) => (
+            <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        {
+          site.links.map((link) => (
+            <a href={link.href} aria-label={link.label} title={link.label}>
+              <Icon name={link.icon ?? 'link'} />
+            </a>
+          ))
+        }
+      </div>
+    </footer>
+  </body>
+</html>

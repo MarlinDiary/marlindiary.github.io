@@ -1,0 +1,139 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Publication from '../components/Publication.astro';
+import Placeholder from '../components/Placeholder.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../site';
+
+const publications = (await getCollection('publications', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order || b.data.year - a.data.year
+);
+
+// Avatar: name a file avatar.jpg / .png / .webp and drop it into src/assets/.
+// It is picked up automatically; until then the slot shows a placeholder.
+const avatarModules = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/avatar.{jpg,jpeg,png,webp,avif}',
+  { eager: true }
+);
+const avatar = Object.values(avatarModules)[0]?.default;
+
+const greeting = site.greeting || `Hello, I'm ${site.name}`;
+---
+
+<Base>
+  <section class="band">
+    <div class="wrap intro">
+      <div class="intro__avatar">
+        {avatar ? <Image src={avatar} alt={site.name} width={504} height={504} /> : <Placeholder />}
+      </div>
+
+      <div class="intro__text">
+        <h1>{greeting}</h1>
+        {site.bio.map((para) => <p set:html={para} />)}
+
+        <div class="meta-links">
+          {
+            site.links.map((link) => (
+              <a href={link.href}>
+                <Icon name={link.icon ?? 'link'} />
+                {link.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <h2>Publications</h2>
+      {
+        publications.length > 0 ? (
+          publications.map((entry) => <Publication entry={entry} />)
+        ) : (
+          <p class="note">
+            No entries yet — add a .md file under src/content/publications/.
+          </p>
+        )
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* Mobile stacks and centres everything; from md up it becomes a row and
+     falls back to left alignment. */
+  .intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2rem; /* 36px */
+  }
+
+  /* Square, sharp-cornered, 12rem on mobile and 14rem from md up. */
+  .intro__avatar {
+    flex: 0 0 12rem;
+    width: 12rem;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--fill);
+  }
+
+  .intro__avatar :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .intro__text {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .intro__text h1 {
+    margin-bottom: 1rem;
+  }
+
+  /* Capped at a comfortable measure rather than filling the full 954px column.
+     Centred along with the rest of the block on mobile; the media query below
+     returns it to the left from md up. */
+  .intro__text p {
+    max-width: 65ch;
+    margin-inline: auto;
+  }
+
+  .intro__text .meta-links {
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    /* Top-aligned: the name is the entry point and should sit level with the
+       top of the photo. It also survives a longer bio — centring would leave
+       the photo floating once the text column outgrows it. */
+    .intro {
+      flex-direction: row;
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .intro__avatar {
+      flex-basis: 14rem;
+      width: 14rem;
+    }
+
+    .intro__text .meta-links {
+      justify-content: flex-start;
+    }
+
+    .intro__text p {
+      margin-inline: 0;
+    }
+  }
+</style>

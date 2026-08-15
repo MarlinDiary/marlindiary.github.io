@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const fmt = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<Base title="Blog">
+  <section class="band">
+    <div class="wrap">
+      <h1>Blog</h1>
+
+      {
+        posts.length > 0 ? (
+          <ul class="post-list">
+            {posts.map((post) => (
+              <li class="post">
+                <a class="post__link" href={`/blog/${post.id}`}>
+                  <h2 class="post__title">{post.data.title}</h2>
+                  <time class="post__date" datetime={post.data.date.toISOString()}>
+                    {fmt.format(post.data.date)}
+                  </time>
+                  {post.data.description && <p class="post__desc">{post.data.description}</p>}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="note">No posts yet — add a .md file under src/content/blog/.</p>
+        )
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  h1 {
+    margin-bottom: 2rem; /* 36px */
+  }
+
+  .post-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* 36px of air on each side of the rule, and no rule after the last entry. */
+  .post {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .post + .post {
+    margin-top: 2rem;
+  }
+
+  .post:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .post__link {
+    display: block;
+    text-decoration: none;
+  }
+
+  /* Display face at the section-heading size, not the publication-title face. */
+  .post__title {
+    margin: 0;
+    font-family: var(--display);
+    font-size: 1.5rem; /* 27px */
+    font-weight: 600;
+    line-height: 1.333;
+    color: var(--ink);
+  }
+
+  .post__link:hover .post__title {
+    color: var(--body);
+  }
+
+  .post__date {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+
+  .post__desc {
+    margin: 0.5rem 0 0;
+    color: var(--body);
+    max-width: 65ch;
+  }
+</style>

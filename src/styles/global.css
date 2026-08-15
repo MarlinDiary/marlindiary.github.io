@@ -1,0 +1,321 @@
+/* ─────────────────────────────────────────────────────────────
+   Replica baseline, implemented from measured values.
+   The 18px root size drives every dimension: 27px=1.5rem, 36px=2rem, 72px=4rem
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  --display: 'Cormorant Garamond', Georgia, serif;
+  --serif: 'Crimson Pro', Georgia, Cambria, serif;
+  --sans: 'Source Sans 3', system-ui, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Greyscale ramp, darkest to lightest. Every colour in the site comes from
+     this list — nothing is hardcoded at a call site. */
+  --ink: #171717; /* headings, own name, emphasis */
+  --body: #404040; /* body copy */
+  --muted: #666666; /* meta, links at rest, nav */
+  --rule: #d4d4d4; /* underlines, placeholder glyphs */
+  --hair: #ededed; /* borders and dividers */
+  --fill: #f2f2f2; /* empty image slots, code backgrounds */
+  --bg: #fdfdfd; /* page */
+
+  --measure: 53rem; /* 954px */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Drives every rem-based dimension below. */
+  font-size: 18px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--body);
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 1.625;
+}
+
+/* --measure is the content width itself (954px); padding sits outside it so the
+   content column measures exactly 53rem. */
+.wrap {
+  max-width: calc(var(--measure) + 3rem);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* 4rem = 72px above and below each band. Adjacent bands drop the top padding
+   so a boundary between two sections is one 72px gap, not two stacked into
+   144px. */
+.band {
+  padding: 4rem 0;
+}
+
+.band + .band {
+  padding-top: 0;
+}
+
+/* ── Headings ───────────────────────────────────────────────────── */
+
+h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 2.25rem; /* 40.5px */
+  font-weight: 600;
+  line-height: 2.5rem;
+  color: var(--ink);
+}
+
+h2 {
+  margin: 0 0 2rem;
+  font-family: var(--display);
+  font-size: 1.5rem; /* 27px */
+  font-weight: 600;
+  line-height: 1.333;
+  color: var(--ink);
+  /* Measured: no rule under the heading. */
+}
+
+h3 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.25rem; /* 22.5px */
+  font-weight: 600;
+  line-height: 1.75rem;
+  color: var(--ink);
+}
+
+p {
+  margin: 0 0 1.25rem;
+}
+
+/* ── Links ───────────────────────────────────────────────────── */
+
+a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: var(--ink);
+}
+
+/* Keyboard focus. Several link groups drop their underline, which leaves a
+   keyboard user with nothing to follow, so the ring is defined explicitly
+   rather than left to the browser default. :focus-visible keeps it off mouse
+   clicks. */
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ── Skip link ───────────────────────────────────────────────── */
+
+.skip-link {
+  position: absolute;
+  left: 50%;
+  top: 0.5rem;
+  translate: -50% -200%;
+  z-index: 10;
+  padding: 0.5rem 1rem;
+  background: var(--ink);
+  color: var(--bg);
+  font-family: var(--sans);
+  font-size: 0.875rem;
+  text-decoration: none;
+  border-radius: 0.25rem;
+}
+
+.skip-link:focus {
+  translate: -50% 0;
+}
+
+/* ── Navigation ───────────────────────────────────────────────────── */
+
+.nav {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  padding-top: 2rem;
+}
+
+.nav a {
+  font-family: var(--sans);
+  font-size: 0.875rem; /* 15.75px */
+  color: var(--muted);
+  text-decoration: none;
+}
+
+/* The current page is marked by weight, not colour. */
+.nav a[aria-current='page'] {
+  font-weight: 700;
+}
+
+.nav a:hover {
+  color: var(--ink);
+}
+
+/* ── Meta / icon link rows ────────────────────────────────────── */
+
+.meta-links {
+  display: flex;
+  flex-wrap: wrap;
+  /* Wider apart across, tighter when the row wraps. */
+  column-gap: 1rem;
+  row-gap: 0.25rem;
+  font-family: var(--sans);
+  font-size: 0.875rem;
+}
+
+.meta-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.meta-links a:hover {
+  color: var(--ink);
+}
+
+.meta-links svg {
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+/* Touch targets. A 15.75px link is about 20px tall, well under what a thumb
+   can hit reliably, so on small screens the hit area is grown with a
+   pseudo-element — no layout shift, and the row gap opens up enough that
+   neighbouring targets do not overlap. */
+@media (max-width: 767px) {
+  .meta-links {
+    row-gap: 1rem;
+  }
+
+  .meta-links a {
+    position: relative;
+  }
+
+  .meta-links a::after {
+    content: '';
+    position: absolute;
+    inset: -0.6rem -0.35rem;
+  }
+}
+
+/* ── Footer ───────────────────────────────────────────────────── */
+
+.site-footer {
+  padding: 3rem 0;
+}
+
+.site-footer .wrap {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+}
+
+.site-footer a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--ink);
+}
+
+.site-footer svg {
+  display: block;
+  width: 1.5rem; /* 27px */
+  height: 1.5rem;
+}
+
+/* ── Small parts ───────────────────────────────────────────────────── */
+
+.note {
+  margin: 0;
+  font-size: 0.875rem;
+  font-family: var(--sans);
+  color: var(--muted);
+}
+
+/* Navigation stays client-side (no full reload), but with no cross-fade:
+   the new page is painted immediately. */
+::view-transition-group(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation: none !important;
+  mix-blend-mode: normal !important;
+}
+
+@media (max-width: 767px) {
+  h1 {
+    font-size: 1.875rem;
+    line-height: 2.125rem;
+  }
+}
+
+/* ── Print ───────────────────────────────────────────────────────
+   People print academic CVs, or save them to PDF. Without this the
+   navigation, the footer icons and the greys all end up on the page.
+   ───────────────────────────────────────────────────────────────── */
+
+@media print {
+  html {
+    font-size: 11pt;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .nav,
+  .site-footer,
+  .skip-link,
+  .post-foot {
+    display: none;
+  }
+
+  .band {
+    padding: 0;
+  }
+
+  .wrap {
+    max-width: none;
+    padding: 0;
+  }
+
+  a {
+    color: #000;
+    text-decoration: none;
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: #000;
+    break-after: avoid;
+  }
+
+  /* Never split an entry across a page break. */
+  .pub,
+  .row,
+  .post {
+    break-inside: avoid;
+  }
+}

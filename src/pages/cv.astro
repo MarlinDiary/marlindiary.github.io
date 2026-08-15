@@ -1,0 +1,268 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { lookupAuthor, shortName } from '../authors';
+import { site } from '../site';
+
+// A CV is a document, not a page: it is scanned top to bottom, so it runs its
+// own vertical rhythm. Leading drops from the site's 1.625 to about 1.43,
+// entries sit 18px apart instead of 27px, and section headings lead into their
+// content at 18px rather than 36px. The type sizes drop a step too, but the
+// leading is what actually makes it read as a document.
+
+const role = 'Ph.D. Student, Some University';
+
+const education = [
+  {
+    title: 'Some University',
+    detail: 'Ph.D. in Something, advised by Advisor Name.',
+    when: '2023 — now',
+    where: 'City, Country',
+  },
+  {
+    title: 'Another University',
+    detail: 'B.S. in Something.',
+    when: '2019 — 2023',
+    where: 'City, Country',
+  },
+];
+
+const employment = [
+  {
+    title: 'Some Lab',
+    detail: 'Research Intern. One sentence on what you did.',
+    when: 'Summer 2025',
+    where: 'City, Country',
+  },
+];
+
+const publications = (await getCollection('publications', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order || b.data.year - a.data.year
+);
+
+// The header repeats every link except the one pointing back at this page.
+const contact = site.links.filter((link) => link.href !== '/cv');
+---
+
+<Base title="CV">
+  <section class="band">
+    <div class="wrap">
+      <header class="cv-head">
+        <div>
+          <h1>{site.name}</h1>
+          <p class="cv-role">{role}</p>
+        </div>
+
+        <div class="cv-contact">
+          {
+            contact.map((link) => (
+              <a href={link.href}>
+                <Icon name={link.icon ?? 'link'} />
+                <span>{link.handle ?? link.label}</span>
+              </a>
+            ))
+          }
+        </div>
+      </header>
+
+      {
+        [
+          { heading: 'Education', items: education },
+          { heading: 'Employment', items: employment },
+        ].map((section) => (
+          <section class="cv-section">
+            <h2>{section.heading}</h2>
+            {section.items.map((item) => (
+              <div class="row">
+                <div class="row__main">
+                  <div class="row__title">{item.title}</div>
+                  <p class="row__detail">{item.detail}</p>
+                </div>
+                <div class="row__aside">
+                  <div>{item.when}</div>
+                  <div>{item.where}</div>
+                </div>
+              </div>
+            ))}
+          </section>
+        ))
+      }
+
+      <section class="cv-section">
+        <h2>Publications</h2>
+        {
+          publications.map((entry) => {
+            const href =
+              entry.data.project ??
+              entry.data.pdf ??
+              (entry.data.arxiv ? `https://arxiv.org/abs/${entry.data.arxiv}` : undefined);
+            const byline = entry.data.authors
+              .map((id) => shortName(lookupAuthor(id, `${entry.id}.md`)))
+              .join(', ');
+
+            return (
+              <div class="row">
+                <div class="row__main">
+                  <div class="row__title">
+                    {href ? <a href={href}>{entry.data.title}</a> : entry.data.title}
+                  </div>
+                  <p class="row__byline">{byline}</p>
+                  <p class="row__detail row__detail--muted">{entry.data.blurb}</p>
+                </div>
+                <div class="row__aside">
+                  <div>
+                    {entry.data.venue}, {entry.data.year}
+                  </div>
+                  {entry.data.awards.map((award) => (
+                    <div class="row__award">{award}</div>
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        }
+      </section>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .cv-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-bottom: 1.5rem; /* 27px */
+    border-bottom: 1px solid var(--hair);
+  }
+
+  /* The role sits at body colour and one step up from the meta size — it is
+     part of the identity block, not a caption. */
+  .cv-role {
+    margin: 0.25rem 0 0;
+    font-size: 1.125rem; /* 20.25px */
+    color: var(--body);
+  }
+
+  /* Stacked and right-aligned, one line per channel, each showing the real
+     address rather than a generic word — a CV may be read on paper, where
+     "GitHub" tells you nothing and "MarlinDiary" does. */
+  .cv-contact {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+    font-family: var(--sans);
+    font-size: 0.875rem;
+  }
+
+  .cv-contact a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .cv-contact a:hover {
+    color: var(--ink);
+  }
+
+  .cv-contact :global(svg) {
+    width: 1em;
+    height: 1em;
+    flex: none;
+  }
+
+  .cv-section {
+    margin-top: 2rem; /* 36px */
+  }
+
+  /* Tighter than the site default: a heading leads straight into its list. */
+  .cv-section h2 {
+    margin-bottom: 1rem; /* 18px */
+  }
+
+  /* Entries are separated by margin, not padding, so the gap between two rows
+     is one 18px step rather than two stacked halves. */
+  .row {
+    display: flex;
+    gap: 1.5rem;
+    align-items: baseline;
+    margin-bottom: 1rem; /* 18px */
+  }
+
+  .row:last-child {
+    margin-bottom: 0;
+  }
+
+  .row__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .row__title {
+    font-family: var(--serif);
+    font-size: 1rem; /* 18px */
+    font-weight: 600;
+    line-height: 1.65;
+    color: var(--ink);
+  }
+
+  .row__title a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .row__title a:hover {
+    color: var(--body);
+  }
+
+  /* Leading drops to 1.43 here. This is the single biggest reason a CV reads
+     as a document rather than a web page. */
+  .row__byline,
+  .row__detail {
+    margin: 0;
+    font-size: 0.875rem; /* 15.75px */
+    line-height: 1.4286; /* 22.5px */
+    color: var(--body);
+  }
+
+  .row__detail--muted {
+    color: var(--muted);
+  }
+
+  /* Dates and location, right-aligned in their own column. */
+  .row__aside {
+    flex: none;
+    text-align: right;
+    font-size: 0.875rem;
+    line-height: 1.4286;
+    color: var(--muted);
+  }
+
+  .row__award {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  @media (max-width: 767px) {
+    .cv-contact {
+      align-items: flex-start;
+    }
+
+    /* Stacks in source order, so the dates land under the entry rather than
+       above it: the institution or paper title stays the first thing read,
+       and the date reads as a footnote to it. */
+    .row {
+      flex-direction: column;
+      gap: 0.25rem; /* 4.5px */
+    }
+
+    .row__aside {
+      text-align: left;
+    }
+  }
+</style>

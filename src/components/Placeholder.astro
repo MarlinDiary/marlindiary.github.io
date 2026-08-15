@@ -1,0 +1,39 @@
+---
+// Neutral stand-in shown wherever an image has not been supplied yet.
+// Deliberately quiet: it should read as an empty slot, never as content.
+// Uses the same Lucide set as every other glyph on the site.
+import Icon from './Icon.astro';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={['placeholder', className]} aria-hidden="true">
+  <Icon name="image" />
+</div>
+
+<style>
+  /* Fill only. Any outline belongs to the container that owns the slot, so
+     each call site decides for itself. */
+  .placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: var(--fill);
+    color: var(--rule);
+  }
+
+  /* :global is required — the <svg> comes from Icon.astro and carries that
+     component's scope marker, not this one's. */
+  .placeholder :global(svg) {
+    width: 22%;
+    height: 22%;
+    max-width: 3rem;
+    max-height: 3rem;
+  }
+</style>

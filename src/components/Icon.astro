@@ -1,0 +1,123 @@
+---
+// Icons come from three sets, each with a job it is actually good at:
+//
+//   - Generic       → Heroicons v2 outline (MIT). 24×24, 1.5 stroke, round
+//                     terminals. The house style for everything non-brand.
+//   - Academic      → Academicons (OFL). The only set that carries Google
+//     brands           Scholar, arXiv, ORCID, Zenodo, DOI and friends.
+//   - Other brands  → Simple Icons (CC0). Covers GitHub and X, which
+//                     Academicons does not have.
+//
+// Two things make the mix work:
+//
+//   1. Per-icon viewBox. Academicons is derived from a font and lives on a
+//      448×512 grid, not 24×24, so the viewBox cannot be hardcoded.
+//   2. Per-set optical scale. Heroicons are strokes inset ~2px; the two brand
+//      sets are solid and run edge to edge, so they read heavier and larger at
+//      the same box size and are scaled down about their own centre.
+//
+// All three JSON files are read at build time only; the client gets inline <svg>.
+
+import heroicons from '@iconify-json/heroicons/icons.json';
+import academicons from '@iconify-json/academicons/icons.json';
+import simple from '@iconify-json/simple-icons/icons.json';
+
+interface Props {
+  name: string;
+  class?: string;
+}
+
+const { name, class: className } = Astro.props;
+
+type IconSet = {
+  width?: number;
+  height?: number;
+  icons: Record<string, { body: string; width?: number; height?: number }>;
+};
+
+// Optical sizing. Heroicons is the reference: its tallest glyphs paint to about
+// 0.81 of the box. The two solid sets run closer to their own edges, so they are
+// scaled down to land on the same painted height.
+const SETS: Record<string, { data: IconSet; scale: number }> = {
+  hero: { data: heroicons as unknown as IconSet, scale: 1 },
+  academic: { data: academicons as unknown as IconSet, scale: 0.84 },
+  simple: { data: simple as unknown as IconSet, scale: 0.83 },
+};
+
+/**
+ * Per-icon corrections, "<set>:<icon>" → scale.
+ *
+ * A single per-set number is not always enough: Academicons is font-derived, so
+ * how much of the 512-tall grid a glyph actually occupies varies. The Scholar
+ * cap fills only about three quarters of its own box and needs scaling up to
+ * sit level with everything else.
+ */
+const OPTICAL: Record<string, number> = {
+  'academic:google-scholar': 1.08,
+};
+
+/** Slot name used across the site → "<set>:<icon>". */
+const MAP: Record<string, string> = {
+  // ── Generic ─────────────────────────────────────────────
+  cv: 'hero:document-text',
+  email: 'hero:envelope',
+  link: 'hero:globe-alt',
+  pdf: 'hero:document-arrow-down',
+  code: 'hero:code-bracket',
+  video: 'hero:play',
+  slides: 'hero:presentation-chart-bar',
+  poster: 'hero:photo',
+  image: 'hero:photo',
+  bibtex: 'hero:document-duplicate',
+
+  // ── Academic brands ─────────────────────────────────────
+  scholar: 'academic:google-scholar',
+  arxiv: 'academic:arxiv',
+  orcid: 'academic:orcid',
+  researchgate: 'academic:researchgate',
+  semanticscholar: 'academic:semantic-scholar',
+  zenodo: 'academic:zenodo',
+  doi: 'academic:doi',
+  openaccess: 'academic:open-access',
+
+  // ── Other brands ────────────────────────────────────────
+  github: 'simple:github',
+  twitter: 'simple:x',
+  x: 'simple:x',
+  bluesky: 'simple:bluesky',
+  linkedin: 'simple:linkedin',
+  youtube: 'simple:youtube',
+  huggingface: 'simple:huggingface',
+};
+
+const [setName, iconName] = (MAP[name] ?? `hero:${name}`).split(':');
+const set = SETS[setName];
+const icon = set?.data.icons[iconName];
+
+if (!icon) {
+  throw new Error(
+    `Unknown icon "${name}" (resolved to ${setName}:${iconName}). ` +
+      `Add a mapping in src/components/Icon.astro or use a valid icon name.`
+  );
+}
+
+// Academicons carries per-icon dimensions; the 24×24 sets fall back to the set default.
+const width = icon.width ?? set.data.width ?? 24;
+const height = icon.height ?? set.data.height ?? 24;
+
+const scale = OPTICAL[`${setName}:${iconName}`] ?? set.scale;
+const transform =
+  scale === 1
+    ? undefined
+    : `translate(${width / 2} ${height / 2}) scale(${scale}) translate(${-width / 2} ${-height / 2})`;
+---
+
+<svg
+  class={className}
+  viewBox={`0 0 ${width} ${height}`}
+  aria-hidden="true"
+  data-icon={name}
+  data-set={setName}
+>
+  {transform ? <g transform={transform} set:html={icon.body} /> : <Fragment set:html={icon.body} />}
+</svg>
