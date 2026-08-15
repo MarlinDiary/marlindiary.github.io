@@ -78,11 +78,15 @@ const isCurrent = (href: string) =>
     {/* 28KB, and the fonts are only fetched for glyphs a formula actually uses. */}
     {math && <link rel="stylesheet" href="/katex/katex.min.css" />}
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {/* Only the body face is preloaded. It is the first thing painted on every
+        page; preloading the rest would compete with it for bandwidth and delay
+        the text that actually matters. */}
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@400;700&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/crimson-pro-400-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
 
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />}
