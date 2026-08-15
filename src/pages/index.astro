@@ -13,11 +13,17 @@ const publications = (await getCollection('publications', ({ data }) => !data.dr
 
 // Avatar: name a file avatar.jpg / .png / .webp and drop it into src/assets/.
 // It is picked up automatically; until then the slot shows a placeholder.
+// An optional avatar-hover.* alongside it is swapped in on hover.
 const avatarModules = import.meta.glob<{ default: ImageMetadata }>(
   '../assets/avatar.{jpg,jpeg,png,webp,avif}',
   { eager: true }
 );
+const avatarHoverModules = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/avatar-hover.{jpg,jpeg,png,webp,avif}',
+  { eager: true }
+);
 const avatar = Object.values(avatarModules)[0]?.default;
+const avatarHover = Object.values(avatarHoverModules)[0]?.default;
 
 const greeting = site.greeting || `Hello, I'm ${site.name}`;
 ---
@@ -27,6 +33,18 @@ const greeting = site.greeting || `Hello, I'm ${site.name}`;
     <div class="wrap intro">
       <div class="intro__avatar">
         {avatar ? <Image src={avatar} alt={site.name} width={504} height={504} /> : <Placeholder />}
+        {
+          avatar && avatarHover && (
+            <Image
+              class="intro__avatar-hover"
+              src={avatarHover}
+              alt=""
+              aria-hidden="true"
+              width={504}
+              height={504}
+            />
+          )
+        }
       </div>
 
       <div class="intro__text">
@@ -63,6 +81,76 @@ const greeting = site.greeting || `Hello, I'm ${site.name}`;
   </section>
 </Base>
 
+<script>
+  // Auto-blink for devices without hover.
+  //
+  // Timings follow a resting human blink: roughly 15–20 a minute, but the gaps
+  // between them are irregular rather than metronomic, and blinks cluster —
+  // a second often follows the first within a fifth of a second. The closed
+  // phase is short; most of a blink is the eyelid travelling.
+  const noHover = matchMedia('(hover: none)');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+
+  const CLOSED_MS = 120;
+  const MIN_GAP_MS = 2200;
+  const GAP_SPREAD_MS = 4200;
+  const DOUBLE_CHANCE = 0.2;
+  const DOUBLE_GAP_MS = 180;
+
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
+  const avatar = () => document.querySelector<HTMLElement>('.intro__avatar');
+
+  function stop() {
+    clearTimeout(timer);
+    timer = undefined;
+    avatar()?.classList.remove('is-blinking');
+  }
+
+  function schedule() {
+    timer = setTimeout(blink, MIN_GAP_MS + Math.random() * GAP_SPREAD_MS);
+  }
+
+  function blink(isSecond = false) {
+    const box = avatar();
+    if (!box) return;
+
+    // Don't blink into a background tab; just wait for the next slot.
+    if (document.visibilityState !== 'visible') {
+      schedule();
+      return;
+    }
+
+    box.classList.add('is-blinking');
+    timer = setTimeout(() => {
+      box.classList.remove('is-blinking');
+      if (!isSecond && Math.random() < DOUBLE_CHANCE) {
+        timer = setTimeout(() => blink(true), DOUBLE_GAP_MS);
+      } else {
+        schedule();
+      }
+    }, CLOSED_MS);
+  }
+
+  function setup() {
+    stop();
+    const box = avatar();
+    if (!box) return;
+
+    const enabled = noHover.matches && !reduced.matches && !!box.querySelector('.intro__avatar-hover');
+    box.toggleAttribute('data-blink', enabled);
+    if (enabled) schedule();
+  }
+
+  setup();
+  // ClientRouter swaps the body, so re-run against the new DOM.
+  document.addEventListener('astro:page-load', setup);
+  document.addEventListener('astro:before-swap', stop);
+  // A tablet switching between touch and a trackpad flips (hover: none).
+  noHover.addEventListener('change', setup);
+  reduced.addEventListener('change', setup);
+</script>
+
 <style>
   /* Mobile stacks and centres everything; from md up it becomes a row and
      falls back to left alignment. */
@@ -76,6 +164,7 @@ const greeting = site.greeting || `Hello, I'm ${site.name}`;
 
   /* Square, sharp-cornered, 12rem on mobile and 14rem from md up. */
   .intro__avatar {
+    position: relative;
     flex: 0 0 12rem;
     width: 12rem;
     aspect-ratio: 1 / 1;
@@ -88,6 +177,44 @@ const greeting = site.greeting || `Hello, I'm ${site.name}`;
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  /* Both frames are stills, so the swap is pure CSS — no script, and the
+     second image is fetched with the page rather than on first hover, which
+     keeps the crossfade from stuttering the first time. */
+  .intro__avatar :global(.intro__avatar-hover) {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .intro__avatar:hover :global(.intro__avatar-hover) {
+    opacity: 1;
+  }
+
+  /*
+   * Touch devices never get a hover, so the portrait inverts: eyes rest open
+   * and close briefly on a timer. `data-blink` is set from script only when
+   * the device actually lacks hover, so a mouse user is unaffected.
+   *
+   * The two directions are timed differently on purpose — a real eyelid shuts
+   * in roughly half the time it takes to open again.
+   */
+  .intro__avatar[data-blink] :global(.intro__avatar-hover) {
+    opacity: 1;
+    transition: opacity 140ms ease-out;
+  }
+
+  .intro__avatar[data-blink].is-blinking :global(.intro__avatar-hover) {
+    opacity: 0;
+    transition: opacity 70ms ease-in;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .intro__avatar :global(.intro__avatar-hover) {
+      transition: none;
+    }
   }
 
   .intro__text {
