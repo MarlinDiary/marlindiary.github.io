@@ -56,14 +56,14 @@ const titleHref =
   <div class="pub__thumb">
     {
       image ? (
-        <Image src={image} alt={imageAlt ?? title} width={382} height={382} />
+        <Image draggable={false} src={image} alt={imageAlt ?? title} width={382} height={382} />
       ) : (
         <Placeholder />
       )
     }
     {
       imageHover && (
-        <Image
+        <Image draggable={false}
           class="pub__hover"
           src={imageHover}
           alt=""
@@ -214,9 +214,14 @@ const titleHref =
     transition: opacity 0.18s ease;
   }
 
-  .pub__thumb:hover :global(.pub__hover),
-  .pub__thumb:hover .pub__video {
-    opacity: 1;
+  /* Gated on a real pointer. A touch device fires :hover on tap and then keeps
+     it applied until the next tap elsewhere, so without this the second image
+     would stick on after being touched. */
+  @media (hover: hover) {
+    .pub__thumb:hover :global(.pub__hover),
+    .pub__thumb:hover .pub__video {
+      opacity: 1;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -279,10 +284,12 @@ const titleHref =
       flex-direction: column;
     }
 
-    /* Stays a square on mobile — full width, not a 16:9 letterbox. */
+    /* Full width and cropped to a banner. A full-width square would take most
+       of the screen height before any text appeared. */
     .pub__thumb {
       flex-basis: auto;
       width: 100%;
+      aspect-ratio: 16 / 9;
     }
   }
 </style>

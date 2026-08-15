@@ -283,6 +283,20 @@ a:hover {
   height: 1.5rem;
 }
 
+/* ── Images ───────────────────────────────────────────────────────
+   Photographs are not draggable and not selectable, so they cannot be pulled
+   out of the page onto the desktop or into another window by accident.
+
+   This is friction, not protection: the file URL is in the HTML, and any
+   viewer can still reach it. Nothing on the open web can prevent that.
+   ───────────────────────────────────────────────────────────────── */
+
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 /* ── Small parts ───────────────────────────────────────────────────── */
 
 .note {

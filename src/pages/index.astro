@@ -73,10 +73,10 @@ const jsonLd = {
   <section class="band">
     <div class="wrap intro">
       <div class="intro__avatar">
-        {avatar ? <Image src={avatar} alt={site.name} width={504} height={504} /> : <Placeholder />}
+        {avatar ? <Image draggable={false} src={avatar} alt={site.name} width={504} height={504} /> : <Placeholder />}
         {
           avatar && avatarHover && (
-            <Image
+            <Image draggable={false}
               class="intro__avatar-hover"
               src={avatarHover}
               alt=""
@@ -219,8 +219,10 @@ const jsonLd = {
     transition: opacity 0.25s ease;
   }
 
-  .intro__avatar:hover :global(.intro__avatar-hover) {
-    opacity: 1;
+  @media (hover: hover) {
+    .intro__avatar:hover :global(.intro__avatar-hover) {
+      opacity: 1;
+    }
   }
 
   /*
