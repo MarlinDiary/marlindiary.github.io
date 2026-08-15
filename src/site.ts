@@ -10,15 +10,16 @@ export const site = {
   greeting: "Kia ora, I'm Chenye Ni",
 
   /** <meta name="description">, also used for social sharing. */
-  description: 'Personal academic homepage.',
+  description:
+    'Ph.D. student at the University of Auckland, working on software supply chain security.',
 
   // The avatar is not configured here: drop a file named avatar.jpg into
   // src/assets/ and it is picked up automatically.
 
   /** Homepage bio. One array item per paragraph. Inline <a> tags are allowed. */
   bio: [
-    `I am a Ph.D. student at <a href="#">Some University</a>, advised by <a href="#">Advisor Name</a>. My research is on one sentence describing the problem you work on.`,
-    `Previously I worked at <a href="#">Somewhere</a> on what you did before.`,
+    `I am a Ph.D. student at the <a href="https://www.auckland.ac.nz">University of Auckland</a>, advised by <a href="https://www.elliottwen.info/">Elliott Wen</a> and <a href="https://valerio-terragni.github.io/">Valerio Terragni</a>. My research is on software supply chain security, and reproducible builds in particular: whether the software you install really came from the source it claims.`,
+    `Away from research, I like well-made hardware — Apple's especially — and I spend more time than I should refining how I work rather than working. The rest of my attention goes to books, films and music.`,
   ],
 
   /**

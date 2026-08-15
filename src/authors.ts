@@ -27,6 +27,19 @@ export const authors = {
     last: 'Ni',
     me: true,
   },
+  elliottWen: {
+    first: 'Elliott',
+    last: 'Wen',
+    website: 'https://www.elliottwen.info/',
+  },
+  valerioTerragni: {
+    first: 'Valerio',
+    last: 'Terragni',
+    website: 'https://valerio-terragni.github.io/',
+  },
+
+  // Placeholders, used by the sample publications. Delete once real papers
+  // replace them.
   collaboratorOne: {
     first: 'Collaborator',
     last: 'One',

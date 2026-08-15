@@ -11,31 +11,20 @@ import { site } from '../site';
 // content at 18px rather than 36px. The type sizes drop a step too, but the
 // leading is what actually makes it read as a document.
 
-const role = 'Ph.D. Student, Some University';
+const role = 'Ph.D. Student, University of Auckland';
 
 const education = [
   {
-    title: 'Some University',
-    detail: 'Ph.D. in Something, advised by Advisor Name.',
-    when: '2023 — now',
-    where: 'City, Country',
-  },
-  {
-    title: 'Another University',
-    detail: 'B.S. in Something.',
-    when: '2019 — 2023',
-    where: 'City, Country',
+    title: 'University of Auckland',
+    detail: 'Ph.D. in Computer Science, advised by Elliott Wen and Valerio Terragni.',
+    when: '2025 — now',
+    where: 'Auckland, New Zealand',
   },
 ];
 
-const employment = [
-  {
-    title: 'Some Lab',
-    detail: 'Research Intern. One sentence on what you did.',
-    when: 'Summer 2025',
-    where: 'City, Country',
-  },
-];
+// Empty sections are skipped, so leave this as [] until there is something
+// real to put in it.
+const employment: typeof education = [];
 
 const publications = (await getCollection('publications', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order || b.data.year - a.data.year
@@ -70,7 +59,9 @@ const contact = site.links.filter((link) => link.href !== '/cv');
         [
           { heading: 'Education', items: education },
           { heading: 'Employment', items: employment },
-        ].map((section) => (
+        ]
+          .filter((section) => section.items.length > 0)
+          .map((section) => (
           <section class="cv-section">
             <h2>{section.heading}</h2>
             {section.items.map((item) => (

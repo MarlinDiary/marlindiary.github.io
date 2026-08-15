@@ -4,7 +4,6 @@ import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Publication from '../components/Publication.astro';
 import Placeholder from '../components/Placeholder.astro';
-import Icon from '../components/Icon.astro';
 import { site } from '../site';
 
 const publications = (await getCollection('publications', ({ data }) => !data.draft)).sort(
@@ -50,17 +49,6 @@ const greeting = site.greeting || `Hello, I'm ${site.name}`;
       <div class="intro__text">
         <h1>{greeting}</h1>
         {site.bio.map((para) => <p set:html={para} />)}
-
-        <div class="meta-links">
-          {
-            site.links.map((link) => (
-              <a href={link.href}>
-                <Icon name={link.icon ?? 'link'} />
-                {link.label}
-              </a>
-            ))
-          }
-        </div>
       </div>
     </div>
   </section>
@@ -235,11 +223,6 @@ const greeting = site.greeting || `Hello, I'm ${site.name}`;
     margin-inline: auto;
   }
 
-  .intro__text .meta-links {
-    justify-content: center;
-    margin-top: 1.5rem;
-  }
-
   @media (min-width: 768px) {
     /* Top-aligned: the name is the entry point and should sit level with the
        top of the photo. It also survives a longer bio — centring would leave
@@ -253,10 +236,6 @@ const greeting = site.greeting || `Hello, I'm ${site.name}`;
     .intro__avatar {
       flex-basis: 14rem;
       width: 14rem;
-    }
-
-    .intro__text .meta-links {
-      justify-content: flex-start;
     }
 
     .intro__text p {
