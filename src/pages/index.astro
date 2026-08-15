@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
+import { getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Publication from '../components/Publication.astro';
 import Placeholder from '../components/Placeholder.astro';
@@ -12,19 +12,50 @@ const publications = (await getCollection('publications', ({ data }) => !data.dr
   (a, b) => a.data.order - b.data.order || b.data.year - a.data.year
 );
 
-// Avatar: name a file avatar.jpg / .png / .webp and drop it into src/assets/.
-// It is picked up automatically; until then the slot shows a placeholder.
-// An optional avatar-hover.* alongside it is swapped in on hover.
-const avatarModules = import.meta.glob<{ default: ImageMetadata }>(
-  '../assets/avatar.{jpg,jpeg,png,webp,avif}',
+/*
+ * Avatar. Drop files into src/assets/ and they are picked up automatically:
+ *
+ *   avatar.*             required — the resting frame
+ *   avatar-hover.*       optional — swapped in on hover
+ *   avatar-dark.*        optional — resting frame in dark mode
+ *   avatar-hover-dark.*  optional — hover frame in dark mode
+ *
+ * Any of the three optional files can be left out; each falls back to its light
+ * counterpart, and with none of them present the slot behaves as a single still.
+ * With no avatar at all it shows a placeholder.
+ */
+const avatarFiles = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/avatar*.{jpg,jpeg,png,webp,avif}',
   { eager: true }
 );
-const avatarHoverModules = import.meta.glob<{ default: ImageMetadata }>(
-  '../assets/avatar-hover.{jpg,jpeg,png,webp,avif}',
-  { eager: true }
-);
-const avatar = Object.values(avatarModules)[0]?.default;
-const avatarHover = Object.values(avatarHoverModules)[0]?.default;
+
+// Matched on the full stem so `avatar-hover` cannot also pick up
+// `avatar-hover-dark`, and `avatar` cannot pick up either of them.
+const pickAvatar = (stem: string) =>
+  Object.entries(avatarFiles).find(([path]) =>
+    new RegExp(`/${stem}\\.[a-z]+$`).test(path)
+  )?.[1].default;
+
+const avatar = pickAvatar('avatar');
+const avatarHover = pickAvatar('avatar-hover');
+const avatarDark = pickAvatar('avatar-dark');
+const avatarHoverDark = pickAvatar('avatar-hover-dark');
+
+/*
+ * The box is 14rem (252px) wide at its largest, so 252 is the 1x width and the
+ * 2x/3x steps cover retina laptops and phones. Quality is raised above the
+ * default: this is a photograph of a face at a size where the eyes are only a
+ * few dozen pixels across, and default WebP leaves visible mottling in the skin.
+ */
+const renderAvatar = (image: ImageMetadata) =>
+  getImage({ src: image, width: 252, densities: [2, 3], format: 'webp', quality: 90 });
+
+const [restLight, restDark, hoverLight, hoverDark] = await Promise.all([
+  avatar && renderAvatar(avatar),
+  avatarDark && renderAvatar(avatarDark),
+  avatarHover && renderAvatar(avatarHover),
+  avatarHoverDark && renderAvatar(avatarHoverDark),
+]);
 
 const greeting = site.greeting || `Hello, I'm ${site.name}`;
 
@@ -73,17 +104,56 @@ const jsonLd = {
   <section class="band">
     <div class="wrap intro">
       <div class="intro__avatar">
-        {avatar ? <Image draggable={false} src={avatar} alt={site.name} width={504} height={504} /> : <Placeholder />}
         {
-          avatar && avatarHover && (
-            <Image draggable={false}
-              class="intro__avatar-hover"
-              src={avatarHover}
-              alt=""
-              aria-hidden="true"
-              width={504}
-              height={504}
-            />
+          restLight ? (
+            /* One <picture> per frame rather than four stacked layers: the
+               browser evaluates the media query itself and fetches only the
+               variant for the scheme in use, so a light-mode visitor never
+               downloads the dark photographs. It also re-evaluates live, so
+               switching the system theme swaps the portrait with it. */
+            <picture>
+              {restDark && (
+                <source
+                  media="(prefers-color-scheme: dark)"
+                  srcset={`${restDark.src} 1x, ${restDark.srcSet.attribute}`}
+                  width={252}
+                  height={252}
+                />
+              )}
+              <img
+                src={restLight.src}
+                srcset={restLight.srcSet.attribute}
+                alt={site.name}
+                width={252}
+                height={252}
+                draggable={false}
+              />
+            </picture>
+          ) : (
+            <Placeholder />
+          )
+        }
+        {
+          restLight && hoverLight && (
+            <picture class="intro__avatar-hover">
+              {hoverDark && (
+                <source
+                  media="(prefers-color-scheme: dark)"
+                  srcset={`${hoverDark.src} 1x, ${hoverDark.srcSet.attribute}`}
+                  width={252}
+                  height={252}
+                />
+              )}
+              <img
+                src={hoverLight.src}
+                srcset={hoverLight.srcSet.attribute}
+                alt=""
+                aria-hidden="true"
+                width={252}
+                height={252}
+                draggable={false}
+              />
+            </picture>
           )
         }
       </div>
@@ -172,13 +242,38 @@ const jsonLd = {
     if (enabled) schedule();
   }
 
+  /*
+   * Keep the portrait on the right side of the colour scheme after load.
+   *
+   * <picture> runs its source selection once, when the image loads. Chromium
+   * does not re-run it when a media query changes afterwards, so a tab left
+   * open while the system switches to dark at sunset would keep the light
+   * frame: a white square on a dark page.
+   *
+   * Re-assigning `srcset` to its own value is the whole fix. The value does not
+   * change; setting the attribute is what queues "update the image data", and
+   * that re-evaluates the <source media> against the scheme now in effect.
+   *
+   * Progressive enhancement: the markup alone is already correct on load, so
+   * the only thing lost without this is the live switch.
+   */
+  const dark = matchMedia('(prefers-color-scheme: dark)');
+
+  function syncScheme() {
+    document
+      .querySelectorAll<HTMLImageElement>('.intro__avatar picture img')
+      .forEach((img) => (img.srcset = img.srcset));
+  }
+
   setup();
   // ClientRouter swaps the body, so re-run against the new DOM.
   document.addEventListener('astro:page-load', setup);
+  document.addEventListener('astro:page-load', syncScheme);
   document.addEventListener('astro:before-swap', stop);
   // A tablet switching between touch and a trackpad flips (hover: none).
   noHover.addEventListener('change', setup);
   reduced.addEventListener('change', setup);
+  dark.addEventListener('change', syncScheme);
 </script>
 
 <style>
@@ -200,6 +295,16 @@ const jsonLd = {
     aspect-ratio: 1 / 1;
     overflow: hidden;
     background: var(--fill);
+  }
+
+  /* <picture> is inline by default and would collapse to the line box. Given
+     the full square explicitly so the `height: 100%` below has something
+     definite to resolve against, which is what `object-fit: cover` needs in
+     order to crop rather than letterbox. */
+  .intro__avatar :global(picture) {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
 
   .intro__avatar :global(img) {
