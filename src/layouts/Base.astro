@@ -11,9 +11,19 @@ interface Props {
   description?: string;
   /** Links the KaTeX stylesheet. Only set by pages whose content has math. */
   math?: boolean;
+  /**
+   * schema.org data for this page, emitted as JSON-LD. This is the machine
+   * readable version of the page: search engines build their knowledge panels
+   * from it, and it is the most reliable thing for an AI crawler to read,
+   * since it states relationships the prose only implies.
+   */
+  jsonLd?: unknown;
 }
 
-const { title, description = site.description, math = false } = Astro.props;
+const { title, description = site.description, math = false, jsonLd } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('/og.jpg', Astro.site);
 const pageTitle = title ? `${title} · ${site.name}` : site.name;
 
 const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
@@ -41,7 +51,22 @@ const isCurrent = (href: string) =>
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_NZ" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={site.name} />
+
+    {/* 1200×630 is the 1.91:1 ratio `summary_large_image` expects, so the card
+        renders full width instead of as a small square thumbnail. */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="canonical" href={canonical} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link
       rel="alternate"
@@ -59,6 +84,8 @@ const isCurrent = (href: string) =>
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@400;700&display=swap"
       rel="stylesheet"
     />
+
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />}
 
     <ClientRouter />
   </head>

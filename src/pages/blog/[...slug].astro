@@ -14,6 +14,17 @@ export const getStaticPaths = (async () => {
 const { post } = Astro.props;
 const { Content } = await render(post);
 
+const origin = Astro.site!.origin;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  datePublished: post.data.date.toISOString(),
+  ...(post.data.description ? { description: post.data.description } : {}),
+  url: `${origin}/blog/${post.id}/`,
+  author: { '@type': 'Person', name: 'Chenye Ni', url: `${origin}/` },
+};
+
 // Detect math in the raw source so the stylesheet loads only where it is
 // needed, without asking the author to remember a frontmatter flag. Matches
 // $$display$$, $inline$, and the \( \) / \[ \] forms remark-math accepts.
@@ -26,7 +37,7 @@ const fmt = new Intl.DateTimeFormat('en-US', {
 });
 ---
 
-<Base title={post.data.title} description={post.data.description} math={hasMath}>
+<Base title={post.data.title} description={post.data.description} math={hasMath} jsonLd={jsonLd}>
   <section class="band">
     <div class="wrap">
       <div class="post">

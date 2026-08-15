@@ -1,0 +1,21 @@
+# Chenye Ni
+
+Ph.D. student at the University of Auckland, advised by Elliott Wen and Valerio
+Terragni. Research on software supply chain security, and reproducible builds in
+particular: whether the software you install really came from the source it
+claims.
+
+## Publications
+
+- [RustBuildEq: A Benchmark for Binary Equivalence under Build Variability](https://doi.org/10.1145/3805760.3814930):
+  AIware 2026. A labelled corpus of Rust binary pairs for learning when build
+  differences are benign. Dataset: https://doi.org/10.5281/zenodo.19244908
+- [Playsemble: Learning Low-Level Programming Through Interactive Games](https://arxiv.org/abs/2602.20167):
+  arXiv 2026. Teaching low-level programming through games rather than
+  exercises. Project: https://asm.protoyard.com/
+
+## Pages
+
+- [Home](https://chenyeni.com/): biography and publications
+- [CV](https://chenyeni.com/cv/): education, experience, teaching, awards
+- [Blog](https://chenyeni.com/blog/): writing, also available at /rss.xml

@@ -5,6 +5,7 @@ import Base from '../layouts/Base.astro';
 import Publication from '../components/Publication.astro';
 import Placeholder from '../components/Placeholder.astro';
 import { site } from '../site';
+import { lookupAuthor, fullName } from '../authors';
 import { externalLinksInHtml } from '../links';
 
 const publications = (await getCollection('publications', ({ data }) => !data.draft)).sort(
@@ -26,9 +27,49 @@ const avatar = Object.values(avatarModules)[0]?.default;
 const avatarHover = Object.values(avatarHoverModules)[0]?.default;
 
 const greeting = site.greeting || `Hello, I'm ${site.name}`;
+
+// The identity anchor for the whole site: `sameAs` is what lets a search engine
+// or an AI system tie this page to the Scholar, GitHub and X profiles and treat
+// them as one person rather than three unrelated accounts.
+const origin = Astro.site!.origin;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${origin}/#person`,
+      name: site.name,
+      url: `${origin}/`,
+      image: `${origin}/og.jpg`,
+      jobTitle: 'Ph.D. Student',
+      email: 'mailto:cni586@aucklanduni.ac.nz',
+      affiliation: {
+        '@type': 'CollegeOrUniversity',
+        name: 'University of Auckland',
+        url: 'https://www.auckland.ac.nz',
+      },
+      knowsAbout: ['Software supply chain security', 'Reproducible builds', 'Binary equivalence'],
+      sameAs: site.links.filter((l) => l.href.startsWith('http')).map((l) => l.href),
+    },
+    ...publications.map((entry) => ({
+      '@type': 'ScholarlyArticle',
+      headline: entry.data.title,
+      datePublished: String(entry.data.year),
+      author: entry.data.authors.map((id) => ({
+        '@type': 'Person',
+        name: fullName(lookupAuthor(id, `${entry.id}.md`)),
+      })),
+      publisher: { '@type': 'Organization', name: entry.data.venue },
+      ...(entry.data.pdf || entry.data.arxiv
+        ? { url: entry.data.pdf ?? `https://arxiv.org/abs/${entry.data.arxiv}` }
+        : {}),
+      creator: { '@id': `${origin}/#person` },
+    })),
+  ],
+};
 ---
 
-<Base>
+<Base jsonLd={jsonLd}>
   <section class="band">
     <div class="wrap intro">
       <div class="intro__avatar">
