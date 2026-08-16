@@ -280,22 +280,26 @@ const hoverSet = hoverImages
    * only in here is never fetched on a device that fails the query — which is
    * what keeps 211kB of unusable hover frames off every phone.
    */
+  /*
+   * Everything about the hover frame lives in here, which is what keeps it off
+   * a touch device: a background image declared only inside a media query that
+   * does not match is never requested. On the homepage that is 211kB of frames
+   * a phone could not display under any circumstance, since a touch screen
+   * never fires hover at all.
+   *
+   * The picture is set on the pseudo-element, not on :hover. Deferring it to
+   * :hover does delay the request until a pointer arrives — worth about 28kB —
+   * but it also takes the picture away the instant the pointer leaves, because
+   * the whole declaration stops matching. The layer empties while its own
+   * fade-out is still running, so the frame vanishes rather than dissolving.
+   * Only opacity should change between the two states.
+   */
   @media (hover: hover) {
-    /*
-     * The picture is declared on :hover, not on the pseudo-element itself.
-     * Putting it on ::after gated the *device* but not the *moment* — the rule
-     * matched as soon as the thumbnail rendered, so the frame was fetched on
-     * load exactly as the old <img> had been. Here it is requested the first
-     * time a pointer arrives, and cached from then on.
-     *
-     * The cost is that the very first hover fades in against nothing for as
-     * long as a 19kB file takes to arrive. Every hover after that is instant.
-     */
-    .pub__thumb:hover::after {
+    .pub__thumb::after {
       background-image: var(--pub-hover);
-      opacity: 1;
     }
 
+    .pub__thumb:hover::after,
     .pub__thumb:hover .pub__video {
       opacity: 1;
     }
