@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import { lookupAuthor, fullName } from '../authors';
 import Icon from './Icon.astro';
@@ -58,10 +58,38 @@ const THUMB_SIZES =
  * candidates rather than an upscaled, soft one.
  */
 const THUMB_WIDTHS = [191, 382, 573, 800, 1200];
+
+/*
+ * The hover frame, as a CSS image-set rather than a second <img>.
+ *
+ * As an <img> it was fetched with the page, on every device. A touch screen
+ * never fires hover, so the two hover frames on the homepage were 211kB that
+ * could not be displayed under any circumstance — and at mobile sizes, since
+ * `sizes` correctly picked the widest candidate for a full-width thumbnail.
+ *
+ * Declared inside `@media (hover: hover)` instead. A background image in a
+ * media query that does not match is never requested, so a phone fetches
+ * nothing at all, and a pointer device fetches it on the first hover.
+ *
+ * Only three densities, based on 191px: the hover state exists only where
+ * there is a pointer, and there the thumbnail is always the 191px desktop
+ * slot. The full-width mobile sizes have no hover to serve.
+ */
+const hoverImages = imageHover
+  ? await Promise.all(
+      [191, 382, 573].map((width) =>
+        getImage({ src: imageHover, width, format: 'webp', quality: 90 })
+      )
+    )
+  : null;
+
+const hoverSet = hoverImages
+  ? `image-set(${hoverImages.map((img, i) => `url("${img.src}") ${i + 1}x`).join(', ')})`
+  : undefined;
 ---
 
 <article class="pub">
-  <div class="pub__thumb">
+  <div class="pub__thumb" style={hoverSet && `--pub-hover: ${hoverSet}`}>
     {
       image ? (
         <Image
@@ -74,20 +102,6 @@ const THUMB_WIDTHS = [191, 382, 573, 800, 1200];
         />
       ) : (
         <Placeholder />
-      )
-    }
-    {
-      imageHover && (
-        <Image
-          draggable={false}
-          class="pub__hover"
-          src={imageHover}
-          alt=""
-          aria-hidden="true"
-          widths={THUMB_WIDTHS}
-          sizes={THUMB_SIZES}
-          quality={90}
-        />
       )
     }
     {
@@ -243,28 +257,52 @@ const THUMB_WIDTHS = [191, 382, 573, 800, 1200];
     object-fit: cover;
   }
 
-  /* Both hover layers sit on top of the still and fade in. Pure CSS, so a
-     touch device — which never fires hover — just keeps the still. */
-  .pub__thumb :global(.pub__hover),
+  /*
+   * The hover frame is a pseudo-element rather than a second <img>, so that the
+   * picture it carries lives inside the media query below and is requested only
+   * where it can actually be shown.
+   */
+  .pub__thumb::after,
   .pub__video {
+    content: '';
     position: absolute;
     inset: 0;
     opacity: 0;
     transition: opacity 0.18s ease;
+    background-size: cover;
+    background-position: center;
   }
 
-  /* Gated on a real pointer. A touch device fires :hover on tap and then keeps
-     it applied until the next tap elsewhere, so without this the second image
-     would stick on after being touched. */
+  /*
+   * Gated on a real pointer, for two reasons. A touch device fires :hover on
+   * tap and then keeps it applied until the next tap elsewhere, so the second
+   * frame would stick on after being touched. And a background image declared
+   * only in here is never fetched on a device that fails the query — which is
+   * what keeps 211kB of unusable hover frames off every phone.
+   */
   @media (hover: hover) {
-    .pub__thumb:hover :global(.pub__hover),
+    /*
+     * The picture is declared on :hover, not on the pseudo-element itself.
+     * Putting it on ::after gated the *device* but not the *moment* — the rule
+     * matched as soon as the thumbnail rendered, so the frame was fetched on
+     * load exactly as the old <img> had been. Here it is requested the first
+     * time a pointer arrives, and cached from then on.
+     *
+     * The cost is that the very first hover fades in against nothing for as
+     * long as a 19kB file takes to arrive. Every hover after that is instant.
+     */
+    .pub__thumb:hover::after {
+      background-image: var(--pub-hover);
+      opacity: 1;
+    }
+
     .pub__thumb:hover .pub__video {
       opacity: 1;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .pub__thumb :global(.pub__hover),
+    .pub__thumb::after,
     .pub__video {
       transition: none;
     }

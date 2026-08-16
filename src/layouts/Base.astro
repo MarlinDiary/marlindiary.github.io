@@ -88,7 +88,11 @@ const isCurrent = (href: string) =>
 
     {noindex && <meta name="robots" content="noindex, follow" />}
 
-    <link rel="canonical" href={canonical} />
+    {/* Omitted where the page is noindex. A canonical names the preferred
+        address for a piece of content; an error screen has no content to
+        prefer, and the one it was pointing at (/404/) is not even a URL the
+        site serves. The two directives also contradict each other. */}
+    {!noindex && <link rel="canonical" href={canonical} />}
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link
       rel="alternate"
