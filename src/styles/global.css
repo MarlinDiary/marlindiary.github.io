@@ -235,8 +235,10 @@ a {
   text-underline-offset: 2px;
 }
 
-a:hover {
-  color: var(--ink);
+@media (hover: hover) {
+  a:hover {
+    color: var(--ink);
+  }
 }
 
 /* Keyboard focus. Several link groups drop their underline, which leaves a
@@ -333,8 +335,10 @@ a:hover {
   font-weight: 700;
 }
 
-.nav a:hover {
-  color: var(--ink);
+@media (hover: hover) {
+  .nav a:hover {
+    color: var(--ink);
+  }
 }
 
 /* ── Meta / icon link rows ────────────────────────────────────── */
@@ -357,8 +361,10 @@ a:hover {
   text-decoration: none;
 }
 
-.meta-links a:hover {
-  color: var(--ink);
+@media (hover: hover) {
+  .meta-links a:hover {
+    color: var(--ink);
+  }
 }
 
 .meta-links svg {
@@ -419,8 +425,10 @@ a:hover {
   text-decoration: none;
 }
 
-.site-footer a:hover {
-  color: var(--ink);
+@media (hover: hover) {
+  .site-footer a:hover {
+    color: var(--ink);
+  }
 }
 
 .site-footer svg {

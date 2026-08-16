@@ -89,8 +89,10 @@ const fmt = new Intl.DateTimeFormat('en-US', {
     color: var(--ink);
   }
 
-  .post__link:hover .post__title {
-    color: var(--body);
+  @media (hover: hover) {
+    .post__link:hover .post__title {
+      color: var(--body);
+    }
   }
 
   .post__meta {

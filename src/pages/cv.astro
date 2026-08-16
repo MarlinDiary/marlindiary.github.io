@@ -288,8 +288,10 @@ const contact = site.links.filter((link) => link.href !== '/cv');
     text-decoration: none;
   }
 
-  .cv-contact a:hover {
-    color: var(--ink);
+  @media (hover: hover) {
+    .cv-contact a:hover {
+      color: var(--ink);
+    }
   }
 
   .cv-contact :global(svg) {
@@ -338,8 +340,10 @@ const contact = site.links.filter((link) => link.href !== '/cv');
     text-decoration: none;
   }
 
-  .row__title a:hover {
-    color: var(--body);
+  @media (hover: hover) {
+    .row__title a:hover {
+      color: var(--body);
+    }
   }
 
   /* Leading drops to 1.43 here. This is the single biggest reason a CV reads

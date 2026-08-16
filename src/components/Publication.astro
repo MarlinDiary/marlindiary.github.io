@@ -324,8 +324,10 @@ const hoverSet = hoverImages
     text-decoration: none;
   }
 
-  .pub__title:hover {
-    color: var(--body);
+  @media (hover: hover) {
+    .pub__title:hover {
+      color: var(--body);
+    }
   }
 
   .pub__authors {
