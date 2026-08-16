@@ -61,8 +61,13 @@ const isCurrent = (href: string) =>
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fdfdfd" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#18181b" />
     {/* Transparent background, so the icon sits correctly on a light or a dark
-        tab strip. The Apple icon is flattened onto white instead: iOS ignores
-        transparency and composites the home-screen icon onto black. */}
+        tab strip.
+
+        The Apple icon is a different file for a reason, not the same drawing at
+        another size: iOS composites it onto black, rounds it with its own mask,
+        and adds no padding of its own. So it is opaque and full-bleed — an icon
+        carrying its own margin renders visibly smaller than every app beside it
+        on the home screen. */}
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
