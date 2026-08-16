@@ -194,9 +194,12 @@ const THUMB_WIDTHS = [191, 382, 573, 800, 1200];
      thumbnail's aspect-ratio and pull it out of square whenever the text
      column is taller. Top-aligned rather than centred, so every entry in the
      list shares one top edge regardless of how long its text runs. */
+  /* Thumbnail centred against the text block, not hung from its top edge.
+     Anything but the default `stretch` will do — stretch overrides the
+     thumbnail's aspect-ratio and it stops being square. */
   .pub {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 1.5rem; /* 27px */
     padding: 1.5rem 0;
   }
@@ -299,6 +302,9 @@ const THUMB_WIDTHS = [191, 382, 573, 800, 1200];
   @media (max-width: 767px) {
     .pub {
       flex-direction: column;
+      /* Stacked, so align-items now governs width. Centring here would shrink
+         the text block to its own content and pull it off the left margin. */
+      align-items: stretch;
     }
 
     /* Full width, cropped to 4:3. A full-width square would take most of the

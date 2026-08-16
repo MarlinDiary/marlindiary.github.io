@@ -364,6 +364,15 @@ const jsonLd = {
     margin-bottom: 1rem;
   }
 
+  /* The last paragraph's bottom margin sits inside this box — .intro__text is a
+     flex item, so it establishes a formatting context and the margin cannot
+     collapse out. Centring the portrait against the box therefore put it 11px
+     below where the text visibly ends. Trailing space under the final line has
+     nothing to separate anyway. */
+  .intro__text > :last-child {
+    margin-bottom: 0;
+  }
+
   /* Capped at a comfortable measure rather than filling the full 954px column.
      Centred along with the rest of the block on mobile; the media query below
      returns it to the left from md up. */
@@ -373,12 +382,14 @@ const jsonLd = {
   }
 
   @media (min-width: 768px) {
-    /* Top-aligned: the name is the entry point and should sit level with the
-       top of the photo. It also survives a longer bio — centring would leave
-       the photo floating once the text column outgrows it. */
+    /* Portrait centred on the text block's midline. Worth knowing the
+       trade-off: the name no longer sits level with the top of the photo, and
+       if the bio grows much longer the photo ends up floating in the middle of
+       a tall column. At two paragraphs the two blocks are close enough in
+       height that centring reads as deliberate. */
     .intro {
       flex-direction: row;
-      align-items: flex-start;
+      align-items: center;
       text-align: left;
     }
 
