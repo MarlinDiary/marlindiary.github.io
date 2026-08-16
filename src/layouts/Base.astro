@@ -184,13 +184,21 @@ const isCurrent = (href: string) =>
     </footer>
     )}
 
-    <!-- Cloudflare Web Analytics -->
+    {/* Cloudflare Web Analytics. No cookies and no identifiers, so the site
+        needs no consent banner.
+
+        `defer` rather than `type="module"`, which is what Cloudflare's own
+        snippet uses. Both wait for the document, but a module script is fetched
+        in CORS mode, which makes it depend on cross-origin headers this site
+        does not control. Matching the vendor's snippet keeps it working if
+        those headers ever change.
+
+        Left outside the `bare` check on purpose: the 404 is exactly the page
+        worth having numbers for. */}
     <script
-      type="module"
+      defer
       src="https://static.cloudflareinsights.com/beacon.min.js"
       data-cf-beacon='{"token":"567787b4fb4f4c458220b2d30dec2eae"}'
-      is:inline
-    ></script>
-    <!-- End Cloudflare Web Analytics -->
+      is:inline></script>
   </body>
 </html>
