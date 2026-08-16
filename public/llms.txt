@@ -14,6 +14,19 @@ claims.
   arXiv 2026. Teaching low-level programming through games rather than
   exercises. Project: https://asm.protoyard.com/
 
+ORCID: https://orcid.org/0009-0003-3461-2056
+
+## Background
+
+- Ph.D. in Computer Science, University of Auckland, from July 2026. Supervised
+  by Elliott Wen and Valerio Terragni. Funded by the Tūwhana Doctoral Scholarship.
+- Master of Science in Computer Science, University of Auckland, Nov 2024 to
+  Feb 2026, First Class Honours.
+- Research Assistant, Robotics Lab, University of Auckland, from July 2026.
+- Teaching Assistant, COMPSCI 331 (Large-Scale Software Development) and
+  COMPSCI 702 (Security for Smart-Devices), University of Auckland, Mar–Jun 2026.
+- First in Course, COMPSCI 702, University of Auckland, 2026.
+
 ## Pages
 
 - [Home](https://chenyeni.com/): biography and publications

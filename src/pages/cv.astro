@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import { lookupAuthor, shortName } from '../authors';
-import { site } from '../site';
+import { site, alsoKnownAs } from '../site';
 import { linkAttrs } from '../links';
 import { primaryLink } from '../publications';
 
@@ -92,11 +92,68 @@ const publications = (await getCollection('publications', ({ data }) => !data.dr
   (a, b) => a.data.order - b.data.order || b.data.year - a.data.year
 );
 
+/*
+ * Structured data for the CV.
+ *
+ * This is the page carrying the facts — where he studied, what he taught, what
+ * he was awarded — and none of it was machine readable. A model asked what
+ * someone's background is has to infer it from prose, and prose is exactly
+ * where it goes wrong: "University of Auckland" appears four times on this page
+ * in four different roles.
+ *
+ * `ProfilePage` wrapping a `Person`, rather than a bare Person: it says this
+ * page is *about* the person, which is what distinguishes a CV from a page that
+ * merely mentions someone. The Person carries the same @id as the homepage's,
+ * so the two are read as one entity rather than two people with the same name.
+ */
+const origin = Astro.site!.origin;
+
+const cvJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  url: `${origin}/cv/`,
+  mainEntity: {
+    '@type': 'Person',
+    '@id': `${origin}/#person`,
+    name: site.name,
+    url: `${origin}/`,
+    jobTitle: role,
+    // Degrees, not every line of the section: `alumniOf` means an institution
+    // attended, and the doctorate in progress is not one yet.
+    alumniOf: [
+      {
+        '@type': 'CollegeOrUniversity',
+        name: 'University of Auckland',
+        url: 'https://www.auckland.ac.nz',
+      },
+    ],
+    hasCredential: {
+      '@type': 'EducationalOccupationalCredential',
+      credentialCategory: 'degree',
+      name: 'Master of Science in Computer Science',
+      educationalLevel: 'Master',
+      recognizedBy: { '@type': 'CollegeOrUniversity', name: 'University of Auckland' },
+    },
+    award: sections
+      .find((section) => section.heading === 'Awards')
+      ?.items.map((item) => item.title),
+    worksFor: {
+      '@type': 'ResearchOrganization',
+      name: 'Robotics Lab, University of Auckland',
+      url: 'https://www.auckland.ac.nz',
+    },
+    sameAs: [
+      ...site.links.filter((link) => link.href.startsWith('http')).map((link) => link.href),
+      ...alsoKnownAs,
+    ],
+  },
+};
+
 // The header repeats every link except the one pointing back at this page.
 const contact = site.links.filter((link) => link.href !== '/cv');
 ---
 
-<Base title="CV">
+<Base title="CV" jsonLd={cvJsonLd}>
   <section class="band">
     <div class="wrap">
       <header class="cv-head">

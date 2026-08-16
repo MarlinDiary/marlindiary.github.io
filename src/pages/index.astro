@@ -4,7 +4,7 @@ import { getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Publication from '../components/Publication.astro';
 import Placeholder from '../components/Placeholder.astro';
-import { site } from '../site';
+import { site, alsoKnownAs } from '../site';
 import { lookupAuthor, fullName } from '../authors';
 import { externalLinksInHtml } from '../links';
 
@@ -92,6 +92,9 @@ const jsonLd = {
       '@id': `${origin}/#person`,
       name: site.name,
       url: `${origin}/`,
+      // The sentence a model quotes when asked who this is. Without it, it has
+      // to compose one from the prose, and what it composes is not always right.
+      description: site.description,
       ...(portraitLarge ? { image: `${origin}${portraitLarge.src}` } : {}),
       jobTitle: 'Ph.D. Student',
       email: 'mailto:cni586@aucklanduni.ac.nz',
@@ -101,7 +104,7 @@ const jsonLd = {
         url: 'https://www.auckland.ac.nz',
       },
       knowsAbout: ['Software supply chain security', 'Reproducible builds', 'Binary equivalence'],
-      sameAs: site.links.filter((l) => l.href.startsWith('http')).map((l) => l.href),
+      sameAs: [...site.links.filter((l) => l.href.startsWith('http')).map((l) => l.href), ...alsoKnownAs],
     },
     ...publications.map((entry, i) => ({
       '@type': 'ScholarlyArticle',

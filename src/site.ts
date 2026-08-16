@@ -69,3 +69,14 @@ export const nav = [
   { label: 'CV', href: '/cv' },
   { label: 'Blog', href: '/blog' },
 ];
+
+/**
+ * Profiles that belong to this person but not on the page.
+ *
+ * `links` above is the visible row — how a reader reaches him — and every entry
+ * there is something worth clicking. This list is the other half of the same
+ * identity: addresses that mean nothing to a reader and everything to a machine
+ * trying to work out whether two mentions of "Chenye Ni" are the same person.
+ * They are folded into the structured data's `sameAs` and rendered nowhere.
+ */
+export const alsoKnownAs = ['https://orcid.org/0009-0003-3461-2056'];
