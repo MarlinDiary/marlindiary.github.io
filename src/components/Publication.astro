@@ -204,6 +204,25 @@ const THUMB_WIDTHS = [191, 382, 573, 800, 1200];
     padding: 1.5rem 0;
   }
 
+  /*
+   * The vertical padding separates one entry from the next — 27px from each
+   * side making 54px between them. The first and last entries have nothing on
+   * that side to separate from, so their share lands on the section's own
+   * spacing instead: the heading gap grew from 36px to 63px, and the boundary
+   * to the next section from 72px to 99px. Dropped at both ends, so the
+   * padding only ever does the job it was set for.
+   *
+   * `:first-of-type` rather than `:first-child` — the <h2> is the first child
+   * of the column, so `:first-child` would match nothing.
+   */
+  .pub:first-of-type {
+    padding-top: 0;
+  }
+
+  .pub:last-child {
+    padding-bottom: 0;
+  }
+
   /* 20% of the content column (954 → 191). The radius lives on this wrapper
      with overflow hidden, which is why reading border-radius off the <img>
      reports 0. */
