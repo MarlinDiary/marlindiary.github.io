@@ -6,6 +6,31 @@
  * can even discover the font files, and text does not paint until that round
  * trip finishes. It also removes a third party from the request path.
  *
+ * `font-display` is split deliberately. The faces the page chrome and body
+ * copy need are `optional`: the browser gives them a short window and, if they
+ * miss it, keeps the fallback for the whole page load rather than swapping
+ * mid-read. Nothing ever changes shape under the reader's eyes. They are all
+ * preloaded in the document head, which is what makes them win that window in
+ * practice. The rest stay `swap` — a face used further down the page has time
+ * to arrive, and guaranteeing it eventually renders matters more there than
+ * avoiding a swap the reader has probably already scrolled past.
+ *
+ * The two Fallback families below are Georgia with its metrics rewritten to
+ * match, so a dropped font costs a change of shape and nothing else: no
+ * reflow, no shift in where a line breaks.
+ *
+ * size-adjust is the ratio of rendered advance widths, measured by setting a
+ * frequency-weighted sample in both faces and comparing. Deliberately NOT the
+ * OS/2 xAvgCharWidth field: foundries compute it over different glyph sets, so
+ * it is not comparable across families. Trusting it here gave 117% for a face
+ * that actually measures 88% — the wrong number in the wrong direction, which
+ * widened the fallback instead of narrowing it and cost an extra line per
+ * paragraph. ascent/descent are the target's own hhea values divided by that
+ * size-adjust, since the overrides are read against the adjusted em.
+ *
+ * Crimson Pro sets about 11% narrower than Georgia and Cormorant Garamond 22%,
+ * which is why an unadjusted fallback re-wraps whole paragraphs.
+ *
  * Only the latin and latin-ext subsets are shipped — latin-ext is not optional,
  * it carries the macron in "Tūwhana" on the CV. The unicode-range on each face
  * is kept, so a visitor still downloads only the subsets their text needs.
@@ -26,7 +51,7 @@
   font-family: 'Cormorant Garamond';
   font-style: normal;
   font-weight: 600;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/cormorant-garamond-600-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
@@ -66,7 +91,7 @@
   font-family: 'Crimson Pro';
   font-style: normal;
   font-weight: 400;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/crimson-pro-400-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
@@ -86,7 +111,7 @@
   font-family: 'Crimson Pro';
   font-style: normal;
   font-weight: 600;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/crimson-pro-600-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
@@ -106,7 +131,7 @@
   font-family: 'Source Sans 3';
   font-style: normal;
   font-weight: 400;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/source-sans-3-400-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
@@ -126,7 +151,52 @@
   font-family: 'Source Sans 3';
   font-style: normal;
   font-weight: 700;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/source-sans-3-700-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/*
+ * Georgia, re-proportioned to stand in for the two serif faces. Never used
+ * when the real font arrives. `local()` only: no download, and on a system
+ * without Georgia the face simply fails and the stack moves on.
+ *
+ * Declared per weight, each against the Georgia cut it will actually resolve
+ * to. A single unweighted face resolves to Georgia Regular, so a bold heading
+ * got Regular scaled by a ratio measured from Bold — 47px too narrow on the
+ * homepage h1. The weights have to be matched separately because Georgia Bold
+ * is not a uniform widening of Georgia Regular.
+ */
+
+/* Crimson Pro 400 measured at 89.25% of Georgia Regular, on body copy */
+@font-face {
+  font-family: 'Crimson Pro Fallback';
+  font-weight: 400;
+  src: local('Georgia');
+  size-adjust: 89.25%;
+  ascent-override: 100.45%;
+  descent-override: 24.07%;
+  line-gap-override: 0.00%;
+}
+
+/* Crimson Pro 600 measured at 79.14% of Georgia Bold, on a publication title */
+@font-face {
+  font-family: 'Crimson Pro Fallback';
+  font-weight: 600 700;
+  src: local('Georgia Bold');
+  size-adjust: 79.14%;
+  ascent-override: 113.28%;
+  descent-override: 27.15%;
+  line-gap-override: 0.00%;
+}
+
+/* Cormorant Garamond 600 measured at 77.54% of Georgia Bold, on headings */
+@font-face {
+  font-family: 'Cormorant Fallback';
+  font-weight: 600 700;
+  src: local('Georgia Bold');
+  size-adjust: 77.54%;
+  ascent-override: 119.16%;
+  descent-override: 37.01%;
+  line-gap-override: 0.00%;
 }

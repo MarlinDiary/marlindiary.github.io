@@ -78,16 +78,28 @@ const isCurrent = (href: string) =>
     {/* 28KB, and the fonts are only fetched for glyphs a formula actually uses. */}
     {math && <link rel="stylesheet" href="/katex/katex.min.css" />}
 
-    {/* Only the body face is preloaded. It is the first thing painted on every
-        page; preloading the rest would compete with it for bandwidth and delay
-        the text that actually matters. */}
-    <link
-      rel="preload"
-      href="/fonts/crimson-pro-400-latin.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
+    {/* The five faces the page itself is set in, preloaded so they are in
+        flight before the stylesheet is even parsed. This is what makes
+        `font-display: optional` work: the browser allows a short window and
+        then commits to whatever it has, so a face discovered late is a face
+        the reader never sees. Preloading them is not competing with more
+        important bytes — on a site that is almost entirely text, these are the
+        most important bytes.
+
+        latin only. The unicode-range on each face means latin-ext is fetched
+        just for the pages whose text needs it, and preloading it would pull
+        down 60kB that most visits never use. */}
+    {
+      [
+        'crimson-pro-400-latin',
+        'crimson-pro-600-latin',
+        'cormorant-garamond-600-latin',
+        'source-sans-3-400-latin',
+        'source-sans-3-700-latin',
+      ].map((face) => (
+        <link rel="preload" href={`/fonts/${face}.woff2`} as="font" type="font/woff2" crossorigin />
+      ))
+    }
 
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />}
 
