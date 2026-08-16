@@ -158,33 +158,11 @@ p {
    border-radius, so it squares off the rounded thumbnails and the inline code
    chips, and it is the wrong shade on a page this light.
 
-   Removing it alone would be worse than leaving it: a touch device fires no
-   hover, so that rectangle is the only thing telling the reader their tap
-   landed. It is replaced rather than deleted — every link darkens while held,
-   which is the same signal the pointer version gives, in the site's own
-   colours and following the shape of the thing pressed.
+   Removed outright, with nothing put in its place.
    ───────────────────────────────────────────────────────────────── */
 
 html {
   -webkit-tap-highlight-color: transparent;
-}
-
-/* Scoped to devices without hover: on a mouse the pointer already provides
-   feedback, and a flash on mousedown is noise. */
-@media (hover: none) {
-  a:active,
-  .nav a:active,
-  .meta-links a:active,
-  .site-footer a:active {
-    color: var(--ink);
-  }
-
-  /* These carry no colour of their own — the picture is the link — so they
-     acknowledge a tap by dipping instead. */
-  .pub__thumb:active,
-  .intro__avatar:active {
-    opacity: 0.7;
-  }
 }
 
 /* ── Links ───────────────────────────────────────────────────── */
