@@ -165,11 +165,20 @@ const fmt = new Intl.DateTimeFormat('en-US', {
   .prose :global(ul),
   .prose :global(ol) {
     margin: 1.3333em 0;
-    padding-left: 1.5556em;
+    /* The list indents by 1.5556em as before; the item takes 0.5em of it back
+       as padding, so the block starts in the same place. */
+    padding-left: 1.0556em;
   }
 
+  /*
+   * The padding is what opens the gap between marker and text. A marker set
+   * `outside` is placed against the item's border box, so padding on the item
+   * pushes the words away from it while the marker stays put — and taking the
+   * same amount off the list's own indent leaves the block where it was.
+   */
   .prose :global(li) {
     margin: 0.6667em 0;
+    padding-left: 0.5em;
   }
 
   /*
@@ -199,19 +208,13 @@ const fmt = new Intl.DateTimeFormat('en-US', {
    * the work a grid would otherwise be drawn to do.
    */
   /*
-   * `display: block` so the table can scroll inside the column instead of
-   * pushing the page sideways. `width: max-content` with a cap lets a narrow
-   * table sit at its natural width rather than being stretched across the
-   * measure, and a wide one stops at the column edge and scrolls.
-   *
-   * The cells wrap, so an ordinary table never reaches this. It is there for
-   * the one that carries a URL or a long identifier with nowhere to break.
+   * Full width, not shrink-to-fit. The rules under the header and between the
+   * rows are the table's structure, and at the measure's own width they line
+   * up with the edges of the text above and below — a narrow table leaves them
+   * stopping short of the column for no reason a reader can see.
    */
   .prose :global(table) {
-    display: block;
-    width: max-content;
-    max-width: 100%;
-    overflow-x: auto;
+    width: 100%;
     margin: 1.7778em 0;
     border-collapse: collapse;
     font-size: 0.8889em;
@@ -246,6 +249,14 @@ const fmt = new Intl.DateTimeFormat('en-US', {
     padding: 0.5em 0.75em 0.5em 0;
     border-bottom: 1px solid var(--hair);
     vertical-align: top;
+  }
+
+  /* A URL or a long identifier has nowhere to break, and in a fixed column it
+     would otherwise push the table past the measure. Breaking the word is the
+     lesser evil: an article should not scroll sideways to be read. */
+  .prose :global(th),
+  .prose :global(td) {
+    overflow-wrap: break-word;
   }
 
   .prose :global(tr:last-child td) {
