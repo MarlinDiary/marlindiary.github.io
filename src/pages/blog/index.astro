@@ -30,9 +30,15 @@ const fmt = new Intl.DateTimeFormat('en-US', {
               <li class="post">
                 <a class="post__link" href={`/blog/${post.id}`}>
                   <h2 class="post__title">{post.data.title}</h2>
-                  <time class="post__date" datetime={post.data.date.toISOString()}>
-                    {fmt.format(post.data.date)}
-                  </time>
+                  <p class="post__meta">
+                    <time datetime={post.data.date.toISOString()}>{fmt.format(post.data.date)}</time>
+                    {post.data.tags.length > 0 && (
+                      <>
+                        <span class="post__sep" aria-hidden="true">·</span>
+                        <span class="post__tags">{post.data.tags.join(', ')}</span>
+                      </>
+                    )}
+                  </p>
                   {post.data.description && <p class="post__desc">{post.data.description}</p>}
                 </a>
               </li>
@@ -87,11 +93,28 @@ const fmt = new Intl.DateTimeFormat('en-US', {
     color: var(--body);
   }
 
-  .post__date {
-    display: block;
-    margin-top: 0.25rem;
+  .post__meta {
+    margin: 0.25rem 0 0;
     font-size: 0.875rem;
     color: var(--muted);
+  }
+
+  /*
+   * 0.5em a side, not the 0.25rem it started at. A word space in Crimson Pro
+   * measures 2.95px at this size — the face sets tight — so the old gap was
+   * barely three of them, and the middot has a comma on each side of it to
+   * separate: one inside the date, one between the tags. It needs to read as a
+   * wider break than the punctuation it is arbitrating.
+   *
+   * In `em` so it tracks the meta size rather than the root.
+   */
+  .post__sep {
+    margin-inline: 0.5em;
+  }
+
+  /* One step darker than the date, the same distinction the post page makes. */
+  .post__tags {
+    color: var(--body);
   }
 
   .post__desc {

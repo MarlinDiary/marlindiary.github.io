@@ -81,6 +81,14 @@ const blog = defineCollection({
     title: z.string(),
     date: z.coerce.date(),
     description: z.string().optional(),
+
+    /**
+     * Topic labels, shown beside the date. Plain text, not links: a tag that
+     * goes somewhere needs an archive page behind it, and an archive holding one
+     * post is a page that exists to disappoint. Making them clickable later
+     * touches nothing already written.
+     */
+    tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
   }),
 });

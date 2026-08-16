@@ -43,9 +43,19 @@ const fmt = new Intl.DateTimeFormat('en-US', {
       <div class="post">
         <header class="post-head">
           <h1>{post.data.title}</h1>
-          <time class="post-head__date" datetime={post.data.date.toISOString()}>
-            {fmt.format(post.data.date)}
-          </time>
+          <p class="post-head__meta">
+            <time datetime={post.data.date.toISOString()}>{fmt.format(post.data.date)}</time>
+            {
+              post.data.tags.length > 0 && (
+                <>
+                  <span class="post-head__sep" aria-hidden="true">
+                    ·
+                  </span>
+                  <span class="post-head__tags">{post.data.tags.join(', ')}</span>
+                </>
+              )
+            }
+          </p>
         </header>
 
         <article class="prose">
@@ -85,10 +95,34 @@ const fmt = new Intl.DateTimeFormat('en-US', {
     margin-bottom: 2rem; /* 36px */
   }
 
-  .post-head__date {
-    display: block;
-    margin-top: 0.5rem;
+  .post-head__meta {
+    margin: 0.5rem 0 0;
     color: var(--muted);
+  }
+
+  /* Separates the date from the labels. Decorative, so it is hidden from
+     assistive technology rather than read out as a word. */
+  /*
+   * 0.5em a side, not the 0.25rem it started at. A word space in Crimson Pro
+   * measures 2.95px at this size — the face sets tight — so the old gap was
+   * barely three of them, and the middot has a comma on each side of it to
+   * separate: one inside the date, one between the tags. It needs to read as a
+   * wider break than the punctuation it is arbitrating.
+   *
+   * In `em` so it tracks the meta size rather than the root.
+   */
+  .post-head__sep {
+    margin-inline: 0.5em;
+  }
+
+  /*
+   * Set as running text, not as chips. A box around a word is a promise that
+   * something happens when you press it, and nothing does — these are labels,
+   * and a comma separates labels perfectly well. One step darker than the date
+   * beside them, which is the whole distinction they need.
+   */
+  .post-head__tags {
+    color: var(--body);
   }
 
   /*
@@ -138,11 +172,91 @@ const fmt = new Intl.DateTimeFormat('en-US', {
     margin: 0.6667em 0;
   }
 
+  /*
+   * A quotation is not an aside. Set at body colour rather than the muted grey
+   * it used to carry, which read as something the author had decided was less
+   * important than the text around it. The rule steps up from `--hair` to
+   * `--rule`: a hairline meant for separating rows is too faint to mark a
+   * block a whole paragraph tall.
+   */
   .prose :global(blockquote) {
     margin: 1.6667em 0;
     padding-left: 1em;
-    border-left: 2px solid var(--hair);
+    border-left: 2px solid var(--rule);
+    color: var(--body);
+  }
+
+  /* The marker is punctuation, not content — it should not sit at the same
+     weight as the words it introduces. */
+  .prose :global(li)::marker {
     color: var(--muted);
+  }
+
+  /*
+   * Tables had no styles at all, so a post containing one fell back to the
+   * browser's cramped default. Set in the same idiom as every other list on
+   * the site: hairline rules, no vertical lines, no fill — the alignment does
+   * the work a grid would otherwise be drawn to do.
+   */
+  /*
+   * `display: block` so the table can scroll inside the column instead of
+   * pushing the page sideways. `width: max-content` with a cap lets a narrow
+   * table sit at its natural width rather than being stretched across the
+   * measure, and a wide one stops at the column edge and scrolls.
+   *
+   * The cells wrap, so an ordinary table never reaches this. It is there for
+   * the one that carries a URL or a long identifier with nowhere to break.
+   */
+  .prose :global(table) {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 1.7778em 0;
+    border-collapse: collapse;
+    font-size: 0.8889em;
+  }
+
+  /*
+   * Three signals, which is the settled point between two attempts that missed
+   * either side of it. At `--ink` and semibold the header read as more
+   * important than the figures under it; dropped to `--muted` and regular it
+   * had no advantage over them at all — lighter than the data it labels, and
+   * distinguished only by its face.
+   *
+   * So: the sans face, semibold, and a rule — at the same `--body` darkness as
+   * the cells, because a label has no business being darker than what it
+   * labels.
+   *
+   * 0.875em stays. It is not a demotion: at that size the sans measures an
+   * x-height of 7.66px against the serif's 7.56px, so the two sit optically
+   * level. Matching point sizes here would make the header visibly larger.
+   */
+  .prose :global(th) {
+    font-family: var(--sans);
+    font-size: 0.875em;
+    font-weight: 600;
+    text-align: left;
+    color: var(--body);
+    padding: 0 0.75em 0.5em 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .prose :global(td) {
+    padding: 0.5em 0.75em 0.5em 0;
+    border-bottom: 1px solid var(--hair);
+    vertical-align: top;
+  }
+
+  .prose :global(tr:last-child td) {
+    border-bottom: 0;
+  }
+
+  /* Trailing padding on the last cell only pushes the text off the right edge
+     of the column. */
+  .prose :global(th:last-child),
+  .prose :global(td:last-child) {
+    padding-right: 0;
   }
 
   .prose :global(img),
@@ -160,6 +274,34 @@ const fmt = new Intl.DateTimeFormat('en-US', {
     border-top: 1px solid var(--hair);
   }
 
+  /*
+   * KaTeX ships `.katex { font-size: 1.21em }`. That factor exists because
+   * Computer Modern has a small x-height for its em and needs the lift to sit
+   * level with a normal body face — but KaTeX_Main and Crimson Pro turn out to
+   * have almost the same x-height ratio here, 0.431 against 0.420, so the
+   * whole 21% arrives as overshoot: inline maths measured 24% taller in the
+   * x-height than the words either side of it.
+   *
+   * 0.975em is where the two x-heights meet, measured rather than guessed.
+   */
+  .prose :global(.katex) {
+    font-size: 0.975em;
+  }
+
+  /*
+   * A displayed formula stands alone, and stacked constructions — fractions,
+   * sums with limits — shrink their parts, so it keeps a step up. Not the
+   * original 1.21: this is a deliberate emphasis for one line, not a
+   * correction applied to every symbol on the page.
+   *
+   * Both classes sit inside one `:global()`. Written as
+   * `:global(.katex-display) .katex` the trailing part is scoped, and KaTeX's
+   * own elements carry no scope marker, so it silently matches nothing.
+   */
+  .prose :global(.katex-display .katex) {
+    font-size: 1.1em;
+  }
+
   /* Display formulas get paragraph-sized air and scroll rather than overflow
      when a long expression is wider than the column. */
   .prose :global(.katex-display) {
@@ -169,33 +311,82 @@ const fmt = new Intl.DateTimeFormat('en-US', {
     padding: 0.25em 0;
   }
 
-  /* Inline code stays light. The reference puts near-black chips inside serif
-     running text, which punches holes in the line and breaks reading rhythm —
-     a tint carries the same signal at a fraction of the contrast. Fenced
-     blocks below stay dark, where the weight is earned. */
+  /*
+   * The tint is doing a job the face cannot: code containing a space —
+   * `const x = 1` — has no visible end without one, and the reader has to work
+   * out where the fragment stops. What made an earlier version of this look
+   * wrong was not the box but the size inside it, set 12% too large and in
+   * semibold on top.
+   *
+   * `--fill` is the site's recessed surface, the same eleven steps below the
+   * page that a code block and an empty image slot sit at. No border and no
+   * added weight: one signal, quietly.
+   *
+   * 0.8em, and the number is measured rather than picked. Two faces sit level
+   * on a line when their x-heights match, not when their point sizes do:
+   * Crimson Pro at 20.25px has an x-height of 8.50px, and this monospace
+   * reaches 8.58px at 0.8em against 9.54px at the 0.889em used before. That
+   * 12% overshoot is what made inline code jump out of the line.
+   */
   .prose :global(code) {
     font-family: var(--mono);
-    font-size: 0.8889em;
-    background: var(--fill);
+    font-size: 0.8em;
     color: var(--ink);
-    padding: 0.15em 0.4em;
+    background: var(--fill);
+    padding: 0.15em 0.35em;
     border-radius: 0.25rem;
+    /* Without this the padding is applied once across a run that wraps, so a
+       fragment breaking over two lines loses the left or right end of its
+       box. */
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }
 
+  /*
+   * A recessed surface, not a slab. The block sits on `--fill` — the same
+   * token behind an empty image slot — so it belongs to the page instead of
+   * being a dark rectangle dropped onto it. Only the token colours come from
+   * the syntax theme; the background it ships with is overridden.
+   *
+   * 0.8em for the same reason inline code is: at the serif's own size a
+   * monospace sets visibly larger.
+   */
   .prose :global(pre) {
-    font-size: 0.8889em;
+    font-size: 0.8em;
     line-height: 1.75;
     margin: 2em 0;
-    padding: 1em 1.5em;
+    padding: 1em 1.25em;
     border-radius: 0.5rem;
     overflow-x: auto;
+    background: var(--fill);
   }
 
+  /*
+   * The theme's own colours, from the contrast-corrected pair built in
+   * astro.config.mjs — every token clears 4.6:1 against the background below.
+   */
+  .prose :global(pre),
+  .prose :global(pre span) {
+    color: var(--shiki-light);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .prose :global(pre),
+    .prose :global(pre span) {
+      color: var(--shiki-dark);
+    }
+  }
+
+  /* Inside a fence there is no serif to sit level with, and the highlighter
+     owns the colours. */
+  /* The block already is the surface; the inline treatment would draw a second
+     one inside it. */
   .prose :global(pre code) {
-    background: none;
     color: inherit;
-    padding: 0;
     font-size: inherit;
+    background: none;
+    padding: 0;
+    border-radius: 0;
   }
 
   /* Rule above the back link, matching the reference's post footer. */
