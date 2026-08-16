@@ -25,6 +25,12 @@ interface Entry {
   detail?: string;
   when: string;
   where?: string;
+  /**
+   * Turns the title into a link. For the entries whose name is opaque on its
+   * own — a scholarship named after the project that funds it explains nothing
+   * to a reader who has not heard of the project.
+   */
+  href?: string;
 }
 
 const sections: { heading: string; items: Entry[] }[] = [
@@ -76,8 +82,9 @@ const sections: { heading: string; items: Entry[] }[] = [
     items: [
       {
         title: 'Tūwhana Doctoral Scholarship',
-        detail: 'Full funding for the Ph.D. at the University of Auckland.',
+        detail: 'Full funding, from the MBIE Endeavour Fund.',
         when: '2026',
+        href: 'https://ssc-fort.github.io/',
       },
       {
         title: 'First in Course — COMPSCI 702',
@@ -183,7 +190,15 @@ const contact = site.links.filter((link) => link.href !== '/cv');
               {section.items.map((item) => (
                 <div class="row">
                   <div class="row__main">
-                    <div class="row__title">{item.title}</div>
+                    <div class="row__title">
+                      {item.href ? (
+                        <a href={item.href} {...linkAttrs(item.href)}>
+                          {item.title}
+                        </a>
+                      ) : (
+                        item.title
+                      )}
+                    </div>
                     {item.detail && <p class="row__detail">{item.detail}</p>}
                   </div>
                   <div class="row__aside">
