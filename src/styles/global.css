@@ -371,6 +371,38 @@ img {
   -webkit-touch-callout: none;
 }
 
+/* ── Pictures in the dark ──────────────────────────────────────────
+   A bright picture on a dark page glares, and not only because it is bright:
+   the eye has already adapted to the surround, so the same image reads far
+   louder than it does on white. Everything carrying a picture is knocked back
+   a fifth.
+
+   Applied as a blanket rule with an opt-out, not to a list of selectors. A
+   list has to be remembered every time a new image goes on the site, and the
+   one that gets forgotten is the one that glares.
+
+   0.8 is a compromise, and worth naming as one: the filter scales, so it
+   takes the same fifth off an image that was already dark. Measured on this
+   site's own thumbnails, mean luminance goes 216 → 172 and 113 → 90. It takes
+   the edge off a bright picture; it cannot rescue one that is mostly white
+   field, and for those the answer is a second exposure of the file itself —
+   what the portrait does, and why the portrait opts out here.
+   ───────────────────────────────────────────────────────────────── */
+
+@media (prefers-color-scheme: dark) {
+  img:not([data-dark-native]),
+  video {
+    filter: brightness(0.8);
+  }
+
+  /* The publication hover frame is a background image on a pseudo-element
+     rather than an <img>, so it is not caught by the rule above and has to be
+     dimmed on the layer that carries it. */
+  .pub__thumb::after {
+    filter: brightness(0.8);
+  }
+}
+
 /* ── Small parts ───────────────────────────────────────────────────── */
 
 .note {
