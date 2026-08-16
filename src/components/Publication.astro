@@ -5,6 +5,7 @@ import { lookupAuthor, fullName } from '../authors';
 import Icon from './Icon.astro';
 import Placeholder from './Placeholder.astro';
 import { linkAttrs } from '../links';
+import { publicationLinks, primaryLink } from '../publications';
 
 interface Props {
   entry: CollectionEntry<'publications'>;
@@ -22,34 +23,16 @@ const {
   imageAlt,
   imageHover,
   videoHover,
-  project,
-  dataset,
-  arxiv,
-  github,
-  pdf,
-  links: extraLinks,
 } = entry.data;
 
 // Author ids resolved against the registry. A miss throws, so the build fails
 // rather than the page quietly losing a co-author.
 const byline = authors.map((id) => lookupAuthor(id, `${entry.id}.md`));
 
-// Shorthand expanded into full links.
-const links: { label: string; href: string; icon: string }[] = [];
-if (project) links.push({ label: 'Project', href: project, icon: 'link' });
-if (dataset) links.push({ label: 'Dataset', href: dataset, icon: 'dataset' });
-if (pdf) links.push({ label: 'PDF', href: pdf, icon: 'pdf' });
-else if (arxiv) links.push({ label: 'PDF', href: `https://arxiv.org/pdf/${arxiv}`, icon: 'pdf' });
-if (arxiv) links.push({ label: 'arXiv', href: `https://arxiv.org/abs/${arxiv}`, icon: 'arxiv' });
-if (github) links.push({ label: 'Code', href: `https://github.com/${github}`, icon: 'code' });
-links.push(...extraLinks.map((l) => ({ ...l, icon: l.icon ?? 'link' })));
-
-// The title goes wherever the row's first link goes — same priority, one rule
-// to reason about. That order also reads correctly per paper: a project page
-// when there is one, otherwise the dataset for a benchmark paper whose
-// contribution *is* the data, otherwise the paper itself.
-const titleHref =
-  project ?? dataset ?? pdf ?? (arxiv ? `https://arxiv.org/abs/${arxiv}` : undefined) ?? links[0]?.href;
+// Built in src/publications.ts, so the CV derives the same row from the same
+// rule. The title goes wherever that row's first link goes.
+const links = publicationLinks(entry.data);
+const titleHref = primaryLink(entry.data);
 
 /*
  * How wide the thumbnail actually renders, so the browser can pick a candidate

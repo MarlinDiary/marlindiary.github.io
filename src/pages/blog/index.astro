@@ -16,7 +16,12 @@ const fmt = new Intl.DateTimeFormat('en-US', {
 <Base title="Blog">
   <section class="band">
     <div class="wrap">
-      <h1>Blog</h1>
+      {/* The nav already says Blog, and a heading that repeats the tab it was
+          reached from is a line of type that tells the reader nothing. Kept in
+          the markup, hidden visually: a page with no h1 has no top level to
+          hang its post titles off, which reads as a gap to a screen reader and
+          to a search engine. */}
+      <h1 class="visually-hidden">Blog</h1>
 
       {
         posts.length > 0 ? (
@@ -42,10 +47,6 @@ const fmt = new Intl.DateTimeFormat('en-US', {
 </Base>
 
 <style>
-  h1 {
-    margin-bottom: 2rem; /* 36px */
-  }
-
   .post-list {
     margin: 0;
     padding: 0;

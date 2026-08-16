@@ -5,6 +5,7 @@ import Icon from '../components/Icon.astro';
 import { lookupAuthor, shortName } from '../authors';
 import { site } from '../site';
 import { linkAttrs } from '../links';
+import { primaryLink } from '../publications';
 
 // A CV is a document, not a page: it is scanned top to bottom, so it runs its
 // own vertical rhythm. Leading drops from the site's 1.625 to about 1.43,
@@ -142,10 +143,7 @@ const contact = site.links.filter((link) => link.href !== '/cv');
         <h2>Publications</h2>
         {
           publications.map((entry) => {
-            const href =
-              entry.data.project ??
-              entry.data.pdf ??
-              (entry.data.arxiv ? `https://arxiv.org/abs/${entry.data.arxiv}` : undefined);
+            const href = primaryLink(entry.data);
             const byline = entry.data.authors
               .map((id) => shortName(lookupAuthor(id, `${entry.id}.md`)))
               .join(', ');
