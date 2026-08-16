@@ -159,10 +159,19 @@ p {
    chips, and it is the wrong shade on a page this light.
 
    Removed outright, with nothing put in its place.
+
+   Declared on every element rather than on `html` alone. The property is
+   inherited, so the root should be enough — but WebKit's own stylesheet sets
+   it on the elements it considers tappable, and a declaration on the element
+   beats a value inherited from an ancestor. That is why the rule measured as
+   transparent in a desktop engine while iOS carried on drawing the box.
+
+   `rgba(0, 0, 0, 0)` rather than the `transparent` keyword: older WebKit did
+   not treat the two alike here.
    ───────────────────────────────────────────────────────────────── */
 
-html {
-  -webkit-tap-highlight-color: transparent;
+* {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 /* ── Links ───────────────────────────────────────────────────── */
