@@ -59,13 +59,37 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/*
+ * A column at least as tall as the window, with <main> taking up the slack, so
+ * a short page still puts the footer on the bottom edge. Without it the blog
+ * index left 262px of empty page below the footer at a 760px window — a third
+ * of the screen, which reads as content that failed to load rather than as a
+ * page that is simply short.
+ *
+ * The leftover space goes above the footer instead of below it, and space
+ * above reads as air while space below reads as a mistake.
+ *
+ * `dvh` second so it wins where supported: on a phone `100vh` is the viewport
+ * with the address bar hidden, which is taller than what is actually on screen
+ * and would push the footer just out of view on exactly the short pages this
+ * is meant to fix.
+ */
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
   background: var(--bg);
   color: var(--body);
   font-family: var(--serif);
   font-size: 1rem;
   line-height: 1.625;
+}
+
+/* Grows to fill, never shrinks below its content. */
+main {
+  flex: 1 0 auto;
 }
 
 /* --measure is the content width itself (954px); padding sits outside it so the
