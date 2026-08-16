@@ -342,7 +342,11 @@ const fmt = new Intl.DateTimeFormat('en-US', {
   .prose :global(code) {
     font-family: var(--mono);
     font-size: 0.8em;
-    color: var(--ink);
+    /* The same darkness as the words around it. At `--ink` the fragment was
+       emphasised three ways at once — a different face, a darker colour and a
+       tint behind it — and stood out of the line as a result. The face and the
+       tint are the signal; the colour was only shouting over them. */
+    color: var(--body);
     background: var(--fill);
     padding: 0.15em 0.35em;
     border-radius: 0.25rem;
