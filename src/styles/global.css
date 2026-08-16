@@ -196,12 +196,24 @@ p {
  * plain divs — nothing happens when they are pressed — and `:active` fires on
  * them regardless, so styling it there would dim them under a finger that was
  * only scrolling past, and promise something the site does not do.
+ *
+ * Links that leave the page are excluded, and that is the point of the
+ * selectors rather than an oversight. A link opening in a new tab never
+ * receives the end of the touch that started on it — the new tab takes over
+ * mid-gesture — so iOS leaves it stuck in `:active`, and the reader comes back
+ * to a link that is still lit with no way to put it out. `:active` is the
+ * browser's own state and script cannot clear it, so the fix is not to enter
+ * it: 20 links carry `target="_blank"` here, and the mailto in the footer hands
+ * off to the Mail app the same way.
+ *
+ * What is left is every link that navigates in place, which is where the
+ * feedback was worth having: the nav, a post title, a heading anchor.
  */
 @media (hover: none) {
-  a:active,
+  a:not([target='_blank']):not([href^='mailto:']):active,
   .nav a:active,
-  .meta-links a:active,
-  .site-footer a:active {
+  .meta-links a:not([target='_blank']):active,
+  .site-footer a:not([target='_blank']):not([href^='mailto:']):active {
     color: var(--ink);
   }
 
