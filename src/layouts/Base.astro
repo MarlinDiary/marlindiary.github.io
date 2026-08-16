@@ -91,7 +91,18 @@ const isCurrent = (href: string) =>
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    {/*
+        Google caps preview images at a small size unless the site says
+        otherwise — the default is `standard`, and `large` is what permits a
+        full-width thumbnail beside a result. Nothing to do with og:image,
+        which only ever reaches social cards.
+
+        Merged with the noindex case rather than emitted as a second robots
+        tag: two of them is undefined behaviour, and a crawler is free to take
+        whichever it likes.
+    */}
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'max-image-preview:large'} />
 
     {/* Omitted where the page is noindex. A canonical names the preferred
         address for a piece of content; an error screen has no content to

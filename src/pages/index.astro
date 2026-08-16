@@ -57,6 +57,27 @@ const [restLight, restDark, hoverLight, hoverDark] = await Promise.all([
   avatarHoverDark && renderAvatar(avatarHoverDark),
 ]);
 
+/*
+ * Images for the structured data, which is a different job from the images on
+ * the page and needs its own sizes.
+ *
+ * Google picks the thumbnail beside a search result from `image` in the
+ * structured data, not from og:image — that one only ever reaches social
+ * cards. It wants something large, so these are generated at the source's full
+ * size rather than reusing the 252px avatar the page renders.
+ *
+ * The resting frame, eyes shut — the same one the page opens with. It is the
+ * portrait this site is recognised by, so it is the one to hand a search engine.
+ */
+const [portraitLarge, ...thumbLarge] = await Promise.all([
+  avatar ? getImage({ src: avatar, width: 1024, format: 'webp', quality: 90 }) : undefined,
+  ...publications.map((entry) =>
+    entry.data.image
+      ? getImage({ src: entry.data.image, width: 1200, format: 'webp', quality: 90 })
+      : undefined
+  ),
+]);
+
 const greeting = site.greeting || `Hello, I'm ${site.name}`;
 
 // The identity anchor for the whole site: `sameAs` is what lets a search engine
@@ -71,7 +92,7 @@ const jsonLd = {
       '@id': `${origin}/#person`,
       name: site.name,
       url: `${origin}/`,
-      image: `${origin}/og.jpg`,
+      ...(portraitLarge ? { image: `${origin}${portraitLarge.src}` } : {}),
       jobTitle: 'Ph.D. Student',
       email: 'mailto:cni586@aucklanduni.ac.nz',
       affiliation: {
@@ -82,8 +103,9 @@ const jsonLd = {
       knowsAbout: ['Software supply chain security', 'Reproducible builds', 'Binary equivalence'],
       sameAs: site.links.filter((l) => l.href.startsWith('http')).map((l) => l.href),
     },
-    ...publications.map((entry) => ({
+    ...publications.map((entry, i) => ({
       '@type': 'ScholarlyArticle',
+      ...(thumbLarge[i] ? { image: `${origin}${thumbLarge[i]!.src}` } : {}),
       headline: entry.data.title,
       datePublished: String(entry.data.year),
       author: entry.data.authors.map((id) => ({
