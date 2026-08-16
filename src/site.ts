@@ -63,21 +63,6 @@ export const site = {
   ] satisfies { label: string; href: string; icon?: string; handle?: string }[],
 };
 
-/**
- * Search-console ownership tokens. Paste the value between the quotes and the
- * tag appears; leave a string empty and nothing is emitted, so the markup never
- * carries a half-filled verification tag.
- *
- * Google Search Console → Settings → Ownership verification → HTML tag
- * Bing Webmaster Tools  → Site verification → Option 1: HTML meta tag
- *
- * Copy only the token, not the whole <meta> element.
- */
-export const verification = {
-  google: '', // content="..." from <meta name="google-site-verification" …>
-  bing: '', //   content="..." from <meta name="msvalidate.01" …>
-};
-
 /** Top navigation. */
 export const nav = [
   { label: 'Home', href: '/' },

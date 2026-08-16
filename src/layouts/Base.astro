@@ -1,6 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
-import { site, nav, verification } from '../site';
+import { site, nav } from '../site';
 import Icon from '../components/Icon.astro';
 import { linkAttrs } from '../links';
 import { siteUpdated, siteUpdatedLabel } from '../updated';
@@ -85,11 +85,6 @@ const isCurrent = (href: string) =>
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
-
-    {verification.google && (
-      <meta name="google-site-verification" content={verification.google} />
-    )}
-    {verification.bing && <meta name="msvalidate.01" content={verification.bing} />}
 
     {noindex && <meta name="robots" content="noindex, follow" />}
 
