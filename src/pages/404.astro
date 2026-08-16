@@ -1,0 +1,82 @@
+---
+import Base from '../layouts/Base.astro';
+
+/*
+ * GitHub Pages serves this file, with a 404 status, for any address it cannot
+ * match. Deliberately not dressed as a page of the site: no navigation, no
+ * footer. Those belong to a document, and this is a dead end — the only useful
+ * thing on it is the way out.
+ */
+---
+
+<Base title="Not found" description="This page does not exist." noindex bare>
+  <div class="wrap lost">
+    <p class="lost__code">404</p>
+    <h1 class="lost__title">Not found</h1>
+    <p class="lost__line">
+      This page did not survive the build. Everything else did, which is either
+      reassuring or suspicious, depending on how you feel about builds.
+    </p>
+    <a class="lost__back" href="/">← Home</a>
+  </div>
+</Base>
+
+<style>
+  /*
+   * No padding: the block is centred in the window by .main--bare, so vertical
+   * padding would only pad something that is already floating in the middle.
+   *
+   * Left-aligned rather than centred. The type on this site sits on a left
+   * margin everywhere else, and a centred stack would read as a different
+   * website wearing the same fonts.
+   */
+
+  /*
+   * "Not found" on its own reads as the title of a page. The number is what
+   * tells someone at a glance that they are looking at an error, so it stays —
+   * as a quiet label above the title, at the meta size and the meta grey.
+   *
+   * No letter-spacing. It was the only instance on the site, and a tracked-out
+   * label is a convention borrowed from a different kind of design than this
+   * one.
+   */
+  .lost__code {
+    margin: 0;
+    font-family: var(--sans);
+    font-size: 0.875rem; /* 15.75px */
+    color: var(--muted);
+  }
+
+  /* The site's own h1: same face, size and weight as the homepage greeting. */
+  .lost__title {
+    margin: 0.5rem 0 0; /* 9px */
+  }
+
+  /*
+   * 24rem is 432px, which measures 59 characters at this size — short enough
+   * to read in one glance, which is all this line is for.
+   *
+   * In rem, not ch. 1ch is the width of a zero, and in Crimson Pro that runs
+   * about 1.4x the average character, so a ch-based cap always sets wider than
+   * it looks. The blog measure is expressed the same way for the same reason.
+   */
+  .lost__line {
+    margin: 1rem 0 0; /* 18px */
+    max-width: 24rem;
+  }
+
+  /* 9 / 18 / 36: each gap doubles the one above it, so the eye moves from
+     label to title to line to exit without any step feeling arbitrary. */
+  .lost__back {
+    display: inline-block;
+    margin-top: 2rem; /* 36px */
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .lost__back:hover {
+    color: var(--ink);
+  }
+</style>

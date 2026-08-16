@@ -18,9 +18,29 @@ interface Props {
    * since it states relationships the prose only implies.
    */
   jsonLd?: unknown;
+  /**
+   * Keeps the page out of search results. Set by the 404: the server answers
+   * with a 404 status, which is the signal that matters, but the page is also
+   * reachable as a plain document at /404 and would otherwise be indexable
+   * like any other.
+   */
+  noindex?: boolean;
+  /**
+   * Drops the navigation and the footer, leaving the head, the type and the
+   * colours. For a screen that is not part of the document — the 404 — where a
+   * nav bar and a row of contact icons would dress an error up as a page.
+   */
+  bare?: boolean;
 }
 
-const { title, description = site.description, math = false, jsonLd } = Astro.props;
+const {
+  title,
+  description = site.description,
+  math = false,
+  jsonLd,
+  noindex = false,
+  bare = false,
+} = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL('/og.jpg', Astro.site);
@@ -66,6 +86,8 @@ const isCurrent = (href: string) =>
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
     <link rel="canonical" href={canonical} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link
@@ -107,28 +129,33 @@ const isCurrent = (href: string) =>
   </head>
 
   <body>
-    <a class="skip-link" href="#main">Skip to content</a>
+    {/* Nothing to skip past on a bare page: the link would send a keyboard
+        user to where the focus already is. */}
+    {!bare && <a class="skip-link" href="#main">Skip to content</a>}
 
-    <div class="wrap">
-      <nav class="nav">
-        {
-          nav.map((item) => (
-            <a
-              href={item.href}
-              data-label={item.label}
-              aria-current={isCurrent(item.href) ? 'page' : undefined}
-            >
-              {item.label}
-            </a>
-          ))
-        }
-      </nav>
-    </div>
+    {
+      !bare && (
+        <div class="wrap">
+          <nav class="nav">
+            {nav.map((item) => (
+              <a
+                href={item.href}
+                data-label={item.label}
+                aria-current={isCurrent(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+      )
+    }
 
-    <main id="main" tabindex="-1">
+    <main id="main" tabindex="-1" class:list={[bare && 'main--bare']}>
       <slot />
     </main>
 
+    {!bare && (
     <footer class="site-footer">
       <div class="wrap">
         <div class="site-footer__links">
@@ -151,5 +178,6 @@ const isCurrent = (href: string) =>
         </p>
       </div>
     </footer>
+    )}
   </body>
 </html>

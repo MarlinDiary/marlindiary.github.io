@@ -92,6 +92,14 @@ main {
   flex: 1 0 auto;
 }
 
+/* With no navigation above and no footer below, there is nothing for the
+   content to sit under — so it sits in the middle of the window instead of
+   clinging to the top of an otherwise empty screen. */
+.main--bare {
+  display: flex;
+  align-items: center;
+}
+
 /* --measure is the content width itself (954px); padding sits outside it so the
    content column measures exactly 53rem. */
 .wrap {
