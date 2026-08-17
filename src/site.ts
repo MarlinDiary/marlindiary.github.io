@@ -79,4 +79,28 @@ export const nav = [
  * trying to work out whether two mentions of "Chenye Ni" are the same person.
  * They are folded into the structured data's `sameAs` and rendered nowhere.
  */
-export const alsoKnownAs = ['https://orcid.org/0009-0003-3461-2056'];
+export const alsoKnownAs = [
+  'https://orcid.org/0009-0003-3461-2056',
+  'https://www.linkedin.com/in/chenyeni/',
+  // The institution's own record, and the strongest of the three: it is on
+  // auckland.ac.nz, so it turns the affiliation this site claims in its
+  // structured data into something a machine can verify against the
+  // university rather than take on the site's word. It links back here too.
+  'https://profiles.auckland.ac.nz/chenye-ni',
+  // Worth declaring precisely because the handle does not match the others: a
+  // machine has no way to guess that `deerspost` is the same person as
+  // `MarlinDiary`, so the statement carries information the rest do not. The
+  // account already displays the same real name, so it discloses nothing that
+  // searching for it would not.
+  'https://www.instagram.com/deerspost/',
+  // Declared for completeness, and the weakest of the set: Weibo serves a
+  // login wall to anything not signed in, so a crawler following this URL sees
+  // no name and no content and can corroborate nothing. Harmless, but it does
+  // not do the work the others do.
+  'https://weibo.com/u/7873964072',
+  // The canonical profile, not the xhslink.cn share link it was given as. That
+  // short link carries `xsec_token`, `share_id` and a timestamp — a session's
+  // worth of parameters that expire — and puts a redirect in front of the
+  // address besides. Verified: the bare URL serves the same page without them.
+  'https://www.xiaohongshu.com/user/profile/689d3bd10000000019019d2a',
+];
