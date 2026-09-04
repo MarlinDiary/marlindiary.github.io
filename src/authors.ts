@@ -57,12 +57,12 @@ export const authors = {
   seanMa: {
     first: 'Sean',
     last: 'Ma',
-    website: 'https://profiles.auckland.ac.nz/sean-ma',
+    website: 'https://leo06051212.github.io/',
   },
   bruceSham: {
     first: 'Bruce',
     last: 'Sham',
-    website: 'https://profiles.auckland.ac.nz/b-sham',
+    website: 'https://www.cs.auckland.ac.nz/~csha092/',
   },
 
   junSeo: {
