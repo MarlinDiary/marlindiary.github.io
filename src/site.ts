@@ -56,9 +56,9 @@ export const site = {
     },
     {
       label: 'Email',
-      href: 'mailto:cni586@aucklanduni.ac.nz',
+      href: 'mailto:chenye.ni@auckland.ac.nz',
       icon: 'email',
-      handle: 'cni586@aucklanduni.ac.nz',
+      handle: 'chenye.ni@auckland.ac.nz',
     },
   ] satisfies { label: string; href: string; icon?: string; handle?: string }[],
 };
