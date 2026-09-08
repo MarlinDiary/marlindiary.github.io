@@ -103,6 +103,11 @@ const jsonLd = {
         name: 'University of Auckland',
         url: 'https://www.auckland.ac.nz',
       },
+      memberOf: {
+        '@type': 'Organization',
+        name: 'HASEL',
+        url: 'https://hasel.auckland.ac.nz/',
+      },
       knowsAbout: ['Software supply chain security', 'Reproducible builds', 'Binary equivalence'],
       sameAs: [...site.links.filter((l) => l.href.startsWith('http')).map((l) => l.href), ...alsoKnownAs],
     },
