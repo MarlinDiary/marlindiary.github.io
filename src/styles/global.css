@@ -321,6 +321,23 @@ a {
   text-decoration: none;
 }
 
+/* Enlarge touch targets, including on devices that also have a mouse. */
+@media (any-pointer: coarse) {
+  .nav a {
+    position: relative;
+  }
+
+  .nav a::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    translate: -50% -50%;
+  }
+}
+
 .nav a::after {
   content: attr(data-label);
   font-weight: 700;
