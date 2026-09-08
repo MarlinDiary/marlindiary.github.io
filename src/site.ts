@@ -18,8 +18,8 @@ export const site = {
 
   /** Homepage bio. One array item per paragraph. Inline <a> tags are allowed. */
   bio: [
-    `I am a Ph.D. student at the <a href="https://www.auckland.ac.nz">University of Auckland</a>, advised by <a href="https://www.elliottwen.info/">Elliott Wen</a> and <a href="https://valerio-terragni.github.io/">Valerio Terragni</a>. My research is on software supply chain security, and reproducible builds in particular: whether the software you install really came from the source it claims.`,
-    `Away from research, I like well-made hardware — Apple's especially — and I spend more time than I should refining how I work rather than working. The rest of my attention goes to indie software, films and AI.`,
+    `I'm a Ph.D. student at the <a href="https://www.auckland.ac.nz">University of Auckland</a>, advised by <a href="https://www.elliottwen.info/">Elliott Wen</a> and <a href="https://valerio-terragni.github.io/">Valerio Terragni</a>. My work focuses on software supply chain security and reproducible builds—checking whether software matches its source code. I'm also a member of <a href="https://hasel.auckland.ac.nz/">HASEL</a>.`,
+    `Outside research, I enjoy films and have a soft spot for salmon. I also like trying out new gadgets and finding better ways to work—though I sometimes spend more time refining my workflow than doing the work.`,
   ],
 
   /**
