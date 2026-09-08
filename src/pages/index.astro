@@ -115,7 +115,8 @@ const jsonLd = {
         '@type': 'Person',
         name: fullName(lookupAuthor(id, `${entry.id}.md`)),
       })),
-      publisher: { '@type': 'Organization', name: entry.data.venue },
+      // A conference or repository name does not establish the publisher.
+      // Omit publisher until explicitly verified instead of inferring it from venue.
       ...(entry.data.pdf || entry.data.arxiv
         ? { url: entry.data.pdf ?? `https://arxiv.org/abs/${entry.data.arxiv}` }
         : {}),
