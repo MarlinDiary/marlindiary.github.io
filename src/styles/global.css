@@ -394,7 +394,7 @@ a {
    can hit reliably, so on small screens the hit area is grown with a
    pseudo-element — no layout shift, and the row gap opens up enough that
    neighbouring targets do not overlap. */
-@media (max-width: 767px) {
+@media screen and (max-width: 767px) {
   .meta-links {
     row-gap: 1rem;
   }
@@ -518,7 +518,7 @@ img {
   mix-blend-mode: normal !important;
 }
 
-@media (max-width: 767px) {
+@media screen and (max-width: 767px) {
   h1 {
     font-size: 1.875rem;
     line-height: 2.125rem;
@@ -531,11 +531,23 @@ img {
    ───────────────────────────────────────────────────────────────── */
 
 @media print {
+  /* Component colours must stay readable even when the screen theme is dark. */
+  :root {
+    --ink: #000;
+    --body: #222;
+    --muted: #444;
+    --hair: #ccc;
+    --bg: #fff;
+    color-scheme: light;
+  }
+
   html {
     font-size: 11pt;
   }
 
   body {
+    display: block;
+    min-height: 0;
     background: #fff;
     color: #000;
   }
@@ -573,16 +585,5 @@ img {
   .row,
   .post {
     break-inside: avoid;
-  }
-
-  /* Paper has no viewport width to trigger the desktop breakpoint, so the CV
-     header is pinned to its side-by-side arrangement explicitly. */
-  .cv-head {
-    flex-wrap: nowrap;
-    align-items: center;
-  }
-
-  .cv-contact {
-    align-items: flex-end;
   }
 }
