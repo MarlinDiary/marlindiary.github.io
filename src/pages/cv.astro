@@ -165,7 +165,11 @@ const cvJsonLd = {
 const contact = site.links.filter((link) => link.href !== '/cv');
 ---
 
-<Base title="CV" jsonLd={cvJsonLd}>
+<Base
+  title="CV"
+  description="Education, research experience, teaching, publications and awards from Chenye Ni, a Ph.D. student at the University of Auckland."
+  jsonLd={cvJsonLd}
+>
   <section class="band">
     <div class="wrap">
       <header class="cv-head">
