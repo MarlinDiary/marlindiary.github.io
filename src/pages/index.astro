@@ -7,6 +7,7 @@ import Placeholder from '../components/Placeholder.astro';
 import { site, alsoKnownAs } from '../site';
 import { lookupAuthor, fullName } from '../authors';
 import { externalLinksInHtml } from '../links';
+import { primaryLink } from '../publications';
 
 const publications = (await getCollection('publications', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order || b.data.year - a.data.year
@@ -122,9 +123,7 @@ const jsonLd = {
       })),
       // A conference or repository name does not establish the publisher.
       // Omit publisher until explicitly verified instead of inferring it from venue.
-      ...(entry.data.pdf || entry.data.arxiv
-        ? { url: entry.data.pdf ?? `https://arxiv.org/abs/${entry.data.arxiv}` }
-        : {}),
+      url: primaryLink(entry.data),
       creator: { '@id': `${origin}/#person` },
     })),
   ],
