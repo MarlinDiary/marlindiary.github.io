@@ -25,7 +25,7 @@ ORCID: https://orcid.org/0009-0003-3461-2056
 - Research Assistant, Robotics Lab, University of Auckland, from July 2026.
 - Teaching Assistant, COMPSCI 331 (Large-Scale Software Development) and
   COMPSCI 702 (Security for Smart-Devices), University of Auckland, Mar–Jun 2026.
-- First in Course, COMPSCI 702, University of Auckland, 2026.
+- First in Course, COMPSCI 702, University of Auckland, 2025.
 
 ## Pages
 
