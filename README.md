@@ -18,6 +18,7 @@ npm run build    # output in dist/
 | To change | Edit |
 | --- | --- |
 | Name, greeting, bio, links | `src/site.ts` |
+| Sharing image | `scripts/generate-og.mjs`, then `npm run generate:og` |
 | Avatar | drop `avatar.jpg` into `src/assets/` (picked up automatically) |
 | Avatar hover frame | drop `avatar-hover.jpg` alongside it (optional) |
 | Collaborators | `src/authors.ts` |
@@ -26,6 +27,15 @@ npm run build    # output in dist/
 | CV PDF | place it at `public/cv.pdf` |
 | Blog posts | add a `.md` under `src/content/blog/` |
 | Type sizes, greys, spacing | the CSS variables at the top of `src/styles/global.css` |
+
+## Regenerating the sharing image
+
+After `npm ci`, run `npm run generate:og` to rebuild the 1200×630 `public/og.jpg`
+used by both Open Graph and Twitter. Edit the wording at the top of
+`scripts/generate-og.mjs`; layout is in the same file. The portrait source is
+`scripts/assets/og-portrait.png`, and fonts come from `public/fonts/`.
+Generation works offline even when `og.jpg` is missing; no AI or installed
+system fonts are needed. Run it explicitly before `npm run build` when changing the card.
 
 ## Adding a publication
 
