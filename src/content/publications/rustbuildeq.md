@@ -4,6 +4,7 @@ authors: [elliottWen, me, valerioTerragni, jensDietrich]
 venue: AIware
 year: 2026
 blurb: A labelled corpus of Rust binary pairs for learning when build differences are benign.
+paper: https://doi.org/10.1145/3805760.3814930
 dataset: https://doi.org/10.5281/zenodo.19244908
 pdf: https://dl.acm.org/doi/pdf/10.1145/3805760.3814930
 links:

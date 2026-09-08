@@ -32,15 +32,7 @@ export function publicationLinks(data: PublicationData): PublicationLink[] {
   return links;
 }
 
-/**
- * Where a publication's title points, on the homepage and on the CV alike.
- *
- * Defined as the head of the row above rather than as its own chain of
- * fallbacks. The two pages used to each carry their own copy of that chain, and
- * they drifted: the CV's was missing `dataset`, so RustBuildEq's title led to
- * the PDF on one page and to the benchmark on the other. Deriving it from the
- * single list is what stops that happening again.
- */
+/** Title links on both pages lead to a paper landing page, not an auxiliary resource. */
 export function primaryLink(data: PublicationData): string | undefined {
-  return publicationLinks(data)[0]?.href;
+  return data.paper ?? (data.arxiv ? `https://arxiv.org/abs/${data.arxiv}` : undefined);
 }

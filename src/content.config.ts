@@ -42,6 +42,8 @@ const publications = defineCollection({
       videoHover: z.string().optional(),
 
       // ── Links: give the shorthand, the template expands the full URL ──
+      /** Paper landing page for the title link. Falls back to the arXiv abstract. */
+      paper: z.string().url().optional(),
       /** Full project page URL. */
       project: z.string().url().optional(),
       /**
