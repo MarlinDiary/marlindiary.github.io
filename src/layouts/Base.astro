@@ -9,6 +9,8 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  /** Overrides the search description without changing social sharing text. */
+  searchDescription?: string;
   /** Links the KaTeX stylesheet. Only set by pages whose content has math. */
   math?: boolean;
   /**
@@ -36,6 +38,7 @@ interface Props {
 const {
   title,
   description = site.description,
+  searchDescription = description,
   math = false,
   jsonLd,
   noindex = false,
@@ -72,7 +75,7 @@ const isCurrent = (href: string) =>
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>{pageTitle}</title>
-    <meta name="description" content={description} />
+    <meta name="description" content={searchDescription} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
@@ -110,6 +113,7 @@ const isCurrent = (href: string) =>
         site serves. The two directives also contradict each other. */}
     {!noindex && <link rel="canonical" href={canonical} />}
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="describedby" href="/llms.txt" />
     <link
       rel="alternate"
       type="application/rss+xml"
