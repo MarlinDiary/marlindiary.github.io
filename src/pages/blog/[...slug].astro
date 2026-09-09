@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
 import Base from '../../layouts/Base.astro';
+import { site } from '../../site';
 
 export const getStaticPaths = (async () => {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -22,7 +23,7 @@ const jsonLd = {
   datePublished: post.data.date.toISOString(),
   ...(post.data.description ? { description: post.data.description } : {}),
   url: `${origin}/blog/${post.id}/`,
-  author: { '@type': 'Person', name: 'Chenye Ni', url: `${origin}/` },
+  author: { '@type': 'Person', '@id': `${origin}/#person`, name: site.name, url: `${origin}/` },
 };
 
 // Detect math in the raw source so the stylesheet loads only where it is

@@ -104,11 +104,6 @@ const jsonLd = {
         name: 'University of Auckland',
         url: 'https://www.auckland.ac.nz',
       },
-      memberOf: {
-        '@type': 'Organization',
-        name: 'HASEL',
-        url: 'https://hasel.auckland.ac.nz/',
-      },
       knowsAbout: ['Software supply chain security', 'Reproducible builds', 'Binary equivalence'],
       sameAs: [...site.links.filter((l) => l.href.startsWith('http')).map((l) => l.href), ...alsoKnownAs],
     },
@@ -117,14 +112,17 @@ const jsonLd = {
       ...(thumbLarge[i] ? { image: `${origin}${thumbLarge[i]!.src}` } : {}),
       headline: entry.data.title,
       datePublished: String(entry.data.year),
-      author: entry.data.authors.map((id) => ({
-        '@type': 'Person',
-        name: fullName(lookupAuthor(id, `${entry.id}.md`)),
-      })),
+      author: entry.data.authors.map((id) => {
+        const author = lookupAuthor(id, `${entry.id}.md`);
+        return {
+          '@type': 'Person',
+          ...(author.me ? { '@id': `${origin}/#person`, url: `${origin}/` } : {}),
+          name: fullName(author),
+        };
+      }),
       // A conference or repository name does not establish the publisher.
       // Omit publisher until explicitly verified instead of inferring it from venue.
       url: primaryLink(entry.data),
-      creator: { '@id': `${origin}/#person` },
     })),
   ],
 };
