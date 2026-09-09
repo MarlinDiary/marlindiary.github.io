@@ -81,4 +81,45 @@ import Base from '../layouts/Base.astro';
       color: var(--ink);
     }
   }
+  @media print {
+    /* An error is a single centered panel, not an article starting at the top. */
+    .lost {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    .lost__code {
+      font-family: var(--display);
+      font-size: 88pt;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--ink);
+    }
+
+    .lost__title {
+      margin-top: 4mm;
+      font-size: 22pt;
+    }
+
+    .lost__line {
+      max-width: 100mm;
+      margin: 5mm 0 0;
+      font-size: 11.5pt;
+      line-height: 1.5;
+    }
+
+    .lost__back {
+      margin-top: 8mm;
+      font-size: 10pt;
+      text-decoration: underline;
+    }
+  }
 </style>

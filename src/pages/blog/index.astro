@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import { site } from '../../site';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
@@ -24,7 +25,8 @@ const fmt = new Intl.DateTimeFormat('en-US', {
           the markup, hidden visually: a page with no h1 has no top level to
           hang its post titles off, which reads as a gap to a screen reader and
           to a search engine. */}
-      <h1 class="visually-hidden">Blog</h1>
+      <h1 class="visually-hidden blog-title">Blog</h1>
+      <p class="print-only blog-byline">{site.name}</p>
 
       {
         posts.length > 0 ? (
@@ -126,5 +128,55 @@ const fmt = new Intl.DateTimeFormat('en-US', {
     margin: 0.5rem 0 0;
     color: var(--body);
     max-width: 65ch;
+  }
+  @media print {
+    .wrap {
+      max-width: 150mm;
+    }
+
+    .blog-title {
+      position: static;
+      width: auto;
+      height: auto;
+      margin: 0;
+      overflow: visible;
+      clip: auto;
+      clip-path: none;
+      white-space: normal;
+    }
+
+    .blog-byline {
+      margin: 2mm 0 10mm;
+      font: 9.5pt / 1.4 var(--sans);
+      color: var(--muted);
+    }
+
+    .post {
+      padding-bottom: 5mm;
+    }
+
+    .post + .post {
+      margin-top: 5mm;
+    }
+
+    .post__title {
+      font-size: 18pt;
+    }
+
+    .post__meta {
+      margin-top: 1.5mm;
+      font: 9.5pt / 1.4 var(--sans);
+    }
+
+    .post__sep,
+    .post__tags {
+      display: none;
+    }
+
+    .post__desc {
+      margin-top: 2.5mm;
+      font-size: 11.5pt;
+      line-height: 1.45;
+    }
   }
 </style>

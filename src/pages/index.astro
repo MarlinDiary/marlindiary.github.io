@@ -145,7 +145,7 @@ const jsonLd = {
             <picture>
               {restDark && (
                 <source
-                  media="(prefers-color-scheme: dark)"
+                  media="screen and (prefers-color-scheme: dark)"
                   srcset={`${restDark.src} 1x, ${restDark.srcSet.attribute}`}
                   width={252}
                   height={252}
@@ -170,7 +170,7 @@ const jsonLd = {
             <picture class="intro__avatar-hover">
               {hoverDark && (
                 <source
-                  media="(prefers-color-scheme: dark)"
+                  media="screen and (prefers-color-scheme: dark)"
                   srcset={`${hoverDark.src} 1x, ${hoverDark.srcSet.attribute}`}
                   width={252}
                   height={252}
@@ -189,10 +189,15 @@ const jsonLd = {
             </picture>
           )
         }
+        {/* Native image loading also makes the paper portrait reliable when
+            printing from dark mode. Light-mode visits reuse the same asset. */}
+        {restLight && <img class="intro__avatar-print" src={restLight.src}
+          srcset={restLight.srcSet.attribute} alt={site.name}
+          width={252} height={252} data-dark-native />}
       </div>
 
       <div class="intro__text">
-        <h1>{greeting}</h1>
+        <h1><span class="screen-only">{greeting}</span><span class="print-only">{site.name}</span></h1>
         {site.bio.map((para) => <p set:html={externalLinksInHtml(para)} />)}
       </div>
     </div>
@@ -433,6 +438,65 @@ const jsonLd = {
 
     .intro__text p {
       margin-inline: 0;
+    }
+  }
+  .intro__avatar :global(.intro__avatar-print) {
+    display: none;
+  }
+
+  @media print {
+    .wrap {
+      max-width: 150mm;
+    }
+
+    .intro {
+      flex-direction: column;
+      align-items: center;
+      gap: 5mm;
+      margin-bottom: 9mm;
+      text-align: left;
+    }
+
+    .intro__avatar {
+      flex: none;
+      width: 30mm;
+      height: 30mm;
+      aspect-ratio: 1;
+    }
+
+    .intro__avatar :global(picture) {
+      display: none;
+    }
+
+    .intro__avatar :global(.intro__avatar-print) {
+      display: block;
+      object-fit: contain;
+    }
+
+    .intro__text h1 {
+      text-align: center;
+      font-size: 28pt;
+      margin-bottom: 6mm;
+    }
+
+    .intro__text p {
+      max-width: none;
+      margin: 0 0 3mm;
+      font-size: 11.5pt;
+      line-height: 1.45;
+    }
+
+    .intro__text > :last-child {
+      margin-bottom: 0;
+    }
+
+    .intro__text a {
+      text-decoration: none;
+    }
+
+    h2 {
+      font-size: 17pt;
+      margin-bottom: 4mm;
     }
   }
 </style>

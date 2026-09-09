@@ -45,6 +45,7 @@ const fmt = new Intl.DateTimeFormat('en-US', {
         <header class="post-head">
           <h1>{post.data.title}</h1>
           <p class="post-head__meta">
+            <span class="print-only">{site.name} · </span>
             <time datetime={post.data.date.toISOString()}>{fmt.format(post.data.date)}</time>
             {
               post.data.tags.length > 0 && (
@@ -386,7 +387,7 @@ const fmt = new Intl.DateTimeFormat('en-US', {
     color: var(--shiki-light);
   }
 
-  @media (prefers-color-scheme: dark) {
+  @media screen and (prefers-color-scheme: dark) {
     .prose :global(pre),
     .prose :global(pre span) {
       color: var(--shiki-dark);
@@ -417,4 +418,121 @@ const fmt = new Intl.DateTimeFormat('en-US', {
   .post-foot a {
     text-decoration: none;
   }
+  @media print {
+    .post {
+      max-width: 156mm;
+    }
+
+    .post-head {
+      margin-bottom: 6mm;
+    }
+
+    .post-head__meta {
+      font: 9.5pt / 1.4 var(--sans);
+      margin-top: 3mm;
+    }
+
+    .post-head__tags,
+    .post-head__sep {
+      display: none;
+    }
+
+    .prose {
+      overflow-wrap: anywhere;
+      font-size: 11pt;
+      line-height: 1.45;
+    }
+
+    .prose :global(p),
+    .prose :global(ul),
+    .prose :global(ol) {
+      margin-block: 2mm;
+    }
+
+    .prose :global(li) {
+      margin-block: 0.5mm;
+    }
+
+    .prose :global(h2) {
+      font-size: 16pt;
+      margin: 4mm 0 2mm;
+    }
+
+    .prose :global(h3) {
+      font-size: 14pt;
+      margin: 5mm 0 2.5mm;
+    }
+
+    .prose :global(h4) {
+      font-size: 12pt;
+      margin: 4mm 0 2mm;
+    }
+
+    .prose :global(blockquote) {
+      margin-block: 2mm;
+    }
+
+    /* A printer has no horizontal scrollbar: wrap code, including long IDs. */
+    .prose :global(pre) {
+      margin-block: 2mm;
+      padding: 3mm;
+      border-radius: 0;
+      border: 0.5pt solid var(--hair);
+      font-size: 9pt;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      overflow: visible !important;
+    }
+
+    .prose :global(code) {
+      overflow-wrap: anywhere;
+    }
+
+    .prose :global(pre code) {
+      white-space: inherit;
+    }
+
+    .prose :global(table) {
+      margin-block: 2mm;
+      font-size: 10pt;
+    }
+
+    .prose :global(th),
+    .prose :global(td) {
+      overflow-wrap: anywhere;
+    }
+
+    .prose :global(thead) {
+      display: table-header-group;
+    }
+
+    .prose :global(img),
+    .prose :global(video) {
+      max-height: 180mm;
+      object-fit: contain;
+      margin-block: 2mm;
+      break-inside: avoid;
+    }
+
+    /* Keep introductions with the equation, code or table they introduce. */
+    .prose :global(p:has(+ .katex-display)),
+    .prose :global(p:has(+ p > .katex-display)),
+    .prose :global(p:has(+ pre)),
+    .prose :global(p:has(+ table)),
+    .prose :global(p:has(+ figure)) {
+      break-after: avoid;
+    }
+
+    .prose :global(.katex-display) {
+      margin-block: 2mm;
+      overflow: visible !important;
+      break-inside: avoid;
+    }
+
+    .prose :global(hr) {
+      margin-block: 5mm;
+    }
+  }
+
 </style>
