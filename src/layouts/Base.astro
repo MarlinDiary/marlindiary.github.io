@@ -124,13 +124,9 @@ const isCurrent = (href: string) =>
     {/* 28KB, and the fonts are only fetched for glyphs a formula actually uses. */}
     {math && <link rel="stylesheet" href="/katex/katex.min.css" />}
 
-    {/* The five faces the page itself is set in, preloaded so they are in
-        flight before the stylesheet is even parsed. This is what makes
-        `font-display: optional` work: the browser allows a short window and
-        then commits to whatever it has, so a face discovered late is a face
-        the reader never sees. Preloading them is not competing with more
-        important bytes — on a site that is almost entirely text, these are the
-        most important bytes.
+    {/* Preload the five main faces so their downloads start before the
+        stylesheet is parsed. `font-display: swap` still applies them if they
+        arrive late; preloading shortens the time spent in the fallback.
 
         latin only. The unicode-range on each face means latin-ext is fetched
         just for the pages whose text needs it, and preloading it would pull
