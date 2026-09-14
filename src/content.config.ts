@@ -19,6 +19,8 @@ const publications = defineCollection({
       /** Venue name, original casing preserved: NeurIPS, SIGGRAPH Asia, arXiv. */
       venue: z.string(),
       year: z.number().int(),
+      /** Publication year when it differs from the venue year (e.g. a preprint). */
+      publishedYear: z.number().int().optional(),
 
       /** Honors. Multiple allowed: ['Oral Presentation', 'Best Paper Nominee'] */
       awards: z.array(z.string()).default([]),

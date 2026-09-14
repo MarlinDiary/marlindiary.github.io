@@ -111,7 +111,7 @@ const jsonLd = {
       '@type': 'ScholarlyArticle',
       ...(thumbLarge[i] ? { image: `${origin}${thumbLarge[i]!.src}` } : {}),
       headline: entry.data.title,
-      datePublished: String(entry.data.year),
+      datePublished: String(entry.data.publishedYear ?? entry.data.year),
       author: entry.data.authors.map((id) => {
         const author = lookupAuthor(id, `${entry.id}.md`);
         return {

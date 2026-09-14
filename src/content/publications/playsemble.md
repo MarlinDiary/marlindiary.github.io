@@ -1,8 +1,9 @@
 ---
 title: 'Playsemble: Learning Low-Level Programming Through Interactive Games'
 authors: [elliottWen, paulDenny, andrewLuxtonReilly, seanMa, bruceSham, me, junSeo, yuYang]
-venue: arXiv
-year: 2026
+venue: SIGCSE TS
+year: 2027
+publishedYear: 2026
 order: 1
 blurb: Teaching low-level programming through games rather than exercises.
 project: https://asm.protoyard.com/
