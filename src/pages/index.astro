@@ -229,6 +229,7 @@ const jsonLd = {
   const noHover = matchMedia('(hover: none)');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 
+  const FIRST_BLINK_MS = 1000;
   const CLOSED_MS = 120;
   const MIN_GAP_MS = 2200;
   const GAP_SPREAD_MS = 4200;
@@ -277,7 +278,7 @@ const jsonLd = {
 
     const enabled = noHover.matches && !reduced.matches && !!box.querySelector('.intro__avatar-hover');
     box.toggleAttribute('data-blink', enabled);
-    if (enabled) schedule();
+    if (enabled) timer = setTimeout(blink, FIRST_BLINK_MS);
   }
 
   /*
