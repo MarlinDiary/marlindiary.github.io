@@ -1,6 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
-import { site, nav } from '../site';
+import { site, nav, alsoKnownAs } from '../site';
 import Icon from '../components/Icon.astro';
 import { linkAttrs } from '../links';
 import { siteUpdated, siteUpdatedLabel } from '../updated';
@@ -52,6 +52,7 @@ const pageTitle = title ? `${title} · ${site.name}` : site.name;
 const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
 const isCurrent = (href: string) =>
   href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`);
+const linkedinProfile = alsoKnownAs.find((href) => href.startsWith('https://www.linkedin.com/in/'));
 ---
 
 <!doctype html>
@@ -186,6 +187,11 @@ const isCurrent = (href: string) =>
               </a>
             ))
           }
+          {linkedinProfile && (
+            <a href={linkedinProfile} aria-label="LinkedIn" title="LinkedIn" {...linkAttrs(linkedinProfile)}>
+              <Icon name="linkedin" />
+            </a>
+          )}
           {/* Deliberately not in site.links: that list is how to reach the
               person, and it also fills the CV header, where a feed has no place. */}
           <a href="/rss.xml" aria-label="RSS feed" title="RSS feed">
