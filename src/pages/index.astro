@@ -278,7 +278,10 @@ const jsonLd = {
 
     const enabled = noHover.matches && !reduced.matches && !!box.querySelector('.intro__avatar-hover');
     box.toggleAttribute('data-blink', enabled);
-    if (enabled) timer = setTimeout(blink, FIRST_BLINK_MS);
+    if (enabled) {
+      const firstDelay = FIRST_BLINK_MS + Math.random() * (MIN_GAP_MS - FIRST_BLINK_MS);
+      timer = setTimeout(blink, firstDelay);
+    }
   }
 
   /*
